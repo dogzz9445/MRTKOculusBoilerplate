@@ -85,7 +85,7 @@ MonoBehaviour:
         Microsoft.MixedReality.Toolkit.Providers.XRSDK.WindowsMixedReality
     componentName: XR SDK Windows Mixed Reality Device Manager
     priority: 0
-    runtimePlatform: 9
+    runtimePlatform: 8
     deviceManagerProfile: {fileID: 0}
   - componentType:
       reference: Microsoft.MixedReality.Toolkit.XRSDK.Oculus.Input.OculusXRSDKDeviceManager,
@@ -93,13 +93,13 @@ MonoBehaviour:
     componentName: XR SDK Oculus Device Manager
     priority: 0
     runtimePlatform: 33
-    deviceManagerProfile: {fileID: 11400000, guid: 8f48cb9c26fb518499c65c9f9e8bb4ed, type: 2}
+    deviceManagerProfile: {fileID: 11400000, guid: 4bb9ba8e49485b749af39398c52534f8, type: 2}
   - componentType:
       reference: Microsoft.MixedReality.Toolkit.XRSDK.OpenXR.OpenXRDeviceManager,
         Microsoft.MixedReality.Toolkit.Providers.OpenXR
     componentName: OpenXR XRSDK Device Manager
     priority: 0
-    runtimePlatform: -1
+    runtimePlatform: 0
     deviceManagerProfile: {fileID: 0}
   focusProviderType:
     reference: Microsoft.MixedReality.Toolkit.Input.FocusProvider, Microsoft.MixedReality.Toolkit.Services.InputSystem
@@ -115,5 +115,5 @@ MonoBehaviour:
   speechCommandsProfile: {fileID: 11400000, guid: e8d0393e66374dae9646851a57dc6bc1, type: 2}
   enableControllerMapping: 1
   controllerMappingProfile: {fileID: 11400000, guid: 39ded1fd0711a0c448413d0e1ec4f7f3, type: 2}
-  controllerVisualizationProfile: {fileID: 11400000, guid: 345c06fdf3732db46b96299bd3cba653, type: 2}
+  controllerVisualizationProfile: {fileID: 11400000, guid: d7ab85e038f324b42bcb96fa49cd7945, type: 2}
   handTrackingProfile: {fileID: 11400000, guid: 7f1e3cd673742f94ca860ac7ae733024, type: 2}
