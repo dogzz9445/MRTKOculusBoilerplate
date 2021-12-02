@@ -139,6 +139,7 @@ PlayerSettings:
   - {fileID: -3938986393155636410, guid: d740d233546b5b640b6f15fb6ba51cfe, type: 2}
   - {fileID: -8020494349772014351, guid: 9c3b566588413fb449a0867abfdeed40, type: 2}
   - {fileID: 11400000, guid: 2552bf91f689ff141a984e49c1c83b37, type: 2}
+  - {fileID: 0}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -155,7 +156,8 @@ PlayerSettings:
   resolutionScalingMode: 0
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
-  applicationIdentifier: {}
+  applicationIdentifier:
+    Standalone: com.DefaultCompany.HandTrackingMRTK
   buildNumber:
     Standalone: 0
     iPhone: 0
