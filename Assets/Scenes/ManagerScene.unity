@@ -196,6 +196,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48fac778ab89fcd4a81894a3dcc1fd26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LineDrawPrefab: {fileID: 6614690093748125186, guid: e2df82fecb42155439616944a62905c6, type: 3}
+  FixedPlanePrefab: {fileID: 5683093099553919286, guid: 3ce90aa8fd56ea84eb65078bbcae1e76, type: 3}
+  FixedMainCamera: {fileID: 0}
+  FixedPlane: {fileID: 0}
+  FixedPlaneDistance: 10
+  FixedPlaneLineRenderer: {fileID: 0}
+  FixedPlaneLineWidth: 0.005
 --- !u!4 &863151912
 Transform:
   m_ObjectHideFlags: 0

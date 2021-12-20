@@ -12,9 +12,32 @@ public class GlobalMagicLineListener : MonoBehaviour,
     IMixedRealityFocusHandler,
     IMixedRealityPointerHandler
 {
+    const float DISTANCE_WEIGHT = 0.7071067811865475f;
+
+    public GameObject LineDrawPrefab;
+    private GameObject LineDrawObject;
+    public GameObject FixedPlanePrefab;
+
     public bool IsOnFocusRightHand { get; private set; }
     public bool IsOnFocusLeftHand { get; private set; }
+    public bool IsDrawingLine { get; private set; }
 
+    public Camera FixedMainCamera = null;
+    public GameObject FixedPlane = null;
+    public float FixedPlaneDistance = 5.5f;
+    public LineRenderer FixedPlaneLineRenderer;
+    public float FixedPlaneLineWidth = 0.015f;
+    public Stack<Vector3> FixedPlaneDrawPoints = new Stack<Vector3>();
+    public RaycastHit FixedPlaneRayCastHit;
+
+    private void Start()
+    {
+        IsOnFocusRightHand = false;
+        IsOnFocusLeftHand = false;
+        IsDrawingLine = false;
+        FixedMainCamera = new GameObject("FixedMainCamera").AddComponent<Camera>();
+        FixedMainCamera.targetDisplay = 2;
+    }
 
     private void OnEnable()
     {
@@ -107,21 +130,64 @@ public class GlobalMagicLineListener : MonoBehaviour,
 
     public void OnPointerDown(MixedRealityPointerEventData eventData)
     {
-        throw new System.NotImplementedException();
+        if (!IsOnFocusRightHand)
+        {
+            if (!IsDrawingLine)
+            {
+                IsDrawingLine = true;
+                FixedMainCamera.CopyFrom(Camera.main);
+                FixedMainCamera.targetDisplay = 2;
+                FixedPlane = Instantiate(FixedPlanePrefab);
+                FixedPlane.transform.Translate(FixedMainCamera.ScreenToWorldPoint(new Vector3(FixedMainCamera.pixelWidth / 2.0f, FixedMainCamera.pixelHeight / 2.0f, FixedPlaneDistance)));
+                FixedPlane.transform.forward = FixedMainCamera.transform.forward;
+                FixedPlane.transform.Rotate(new Vector3(90.0f, 0.0f, 0.0f));
+                //FixedPlane.Translate(FixedMainCamera.ScreenToWorldPoint(new Vector3(0.0f, 0.0f, FixedPlaneDistance)));
+                //FixedMainCamera.transform
+                LineDrawObject = Instantiate(LineDrawPrefab) as GameObject;
+                FixedPlaneLineRenderer = LineDrawObject.GetComponent<LineRenderer>();
+                FixedPlaneLineRenderer.positionCount = 0;
+            }
+
+        }
+        if (!IsOnFocusLeftHand)
+        {
+            if (!IsDrawingLine)
+            {
+                IsDrawingLine = true;
+                FixedMainCamera.CopyFrom(Camera.main);
+            }
+        }
     }
 
     public void OnPointerDragged(MixedRealityPointerEventData eventData)
     {
-        throw new System.NotImplementedException();
+        if (IsDrawingLine)
+        {
+            if (Physics.Raycast(eventData.Pointer.Position, eventData.Pointer.Rays[0].Direction, out FixedPlaneRayCastHit))
+            {
+                if (FixedPlaneDrawPoints.Count == 0 || FixedPlaneDrawPoints.Peek() != FixedPlaneRayCastHit.point)
+                {
+                    DrawPoint(FixedPlaneRayCastHit.point);
+                }
+            }
+        }
+    }
+
+    public void DrawPoint(Vector3 pointPosition)
+    {
+        FixedPlaneDrawPoints.Push(pointPosition);
+        FixedPlaneLineRenderer.positionCount = FixedPlaneDrawPoints.Count;
+        FixedPlaneLineRenderer.startWidth = FixedPlaneLineWidth * FixedPlaneDistance * DISTANCE_WEIGHT;
+        FixedPlaneLineRenderer.endWidth = FixedPlaneLineWidth * FixedPlaneDistance * DISTANCE_WEIGHT;
+        FixedPlaneLineRenderer.SetPosition(FixedPlaneDrawPoints.Count - 1, pointPosition);
     }
 
     public void OnPointerUp(MixedRealityPointerEventData eventData)
     {
-        throw new System.NotImplementedException();
+        //if ()
     }
 
     public void OnPointerClicked(MixedRealityPointerEventData eventData)
     {
-        throw new System.NotImplementedException();
     }
 }
