@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DG.Tweening;
 using UnityEngine;
 
 public class SequenceBase
@@ -38,8 +37,8 @@ public class SequenceBase
 
     public IEnumerator StartSequence()
     {
-        Sequence sequence = DOTween.Sequence();
-        sequence.OnComplete(() => IsCompleted = true);
+        //Sequence sequence = DOTween.Sequence();
+        //sequence.OnComplete(() => IsCompleted = true);
 
         yield return WaitForCompletion();
     }
