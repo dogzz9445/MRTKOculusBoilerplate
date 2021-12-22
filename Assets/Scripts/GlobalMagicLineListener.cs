@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using UnityEngine;
+using UnityEngine.Windows;
 
 public class GlobalMagicLineListener : MonoBehaviour,
     IMixedRealityInputActionHandler,
@@ -29,6 +32,8 @@ public class GlobalMagicLineListener : MonoBehaviour,
     public float FixedPlaneLineWidth = 0.015f;
     public Stack<Vector3> FixedPlaneDrawPoints = new Stack<Vector3>();
     public RaycastHit FixedPlaneRayCastHit;
+
+    public List<Vector3> TwoDimentionalDrawPoints = new List<Vector3>();
 
     private void Start()
     {
@@ -141,8 +146,6 @@ public class GlobalMagicLineListener : MonoBehaviour,
                 FixedPlane.transform.Translate(FixedMainCamera.ScreenToWorldPoint(new Vector3(FixedMainCamera.pixelWidth / 2.0f, FixedMainCamera.pixelHeight / 2.0f, FixedPlaneDistance)));
                 FixedPlane.transform.forward = FixedMainCamera.transform.forward;
                 FixedPlane.transform.Rotate(new Vector3(90.0f, 0.0f, 0.0f));
-                //FixedPlane.Translate(FixedMainCamera.ScreenToWorldPoint(new Vector3(0.0f, 0.0f, FixedPlaneDistance)));
-                //FixedMainCamera.transform
                 LineDrawObject = Instantiate(LineDrawPrefab) as GameObject;
                 FixedPlaneLineRenderer = LineDrawObject.GetComponent<LineRenderer>();
                 FixedPlaneLineRenderer.positionCount = 0;
@@ -184,10 +187,78 @@ public class GlobalMagicLineListener : MonoBehaviour,
 
     public void OnPointerUp(MixedRealityPointerEventData eventData)
     {
-        //if ()
+        if (IsDrawingLine)
+        {
+            IsDrawingLine = false;
+
+            TwoDimentionalDrawPoints.Clear();
+            foreach (var worldPoint in FixedPlaneDrawPoints)
+            {
+                TwoDimentionalDrawPoints.Add(FixedMainCamera.WorldToScreenPoint(worldPoint));
+            }
+            FixedPlaneDrawPoints.Clear();
+
+            Texture2D texture = new Texture2D(300, 300);
+            var fillColor = Color.white;
+            var fillColorArray = texture.GetPixels();
+
+            for (var i = 0; i < fillColorArray.Length; ++i)
+            {
+                fillColorArray[i] = fillColor;
+            }
+
+            texture.SetPixels(fillColorArray);
+
+            // if width < 300, height < 300
+            Vector2 maxPoint = new Vector2(TwoDimentionalDrawPoints.Max(x => x.x), TwoDimentionalDrawPoints.Max(x => x.y));
+            Vector2 minPoint = new Vector2(TwoDimentionalDrawPoints.Min(x => x.x), TwoDimentionalDrawPoints.Min(x => x.y));
+            float originalWidth = maxPoint.x - minPoint.x;
+            float originalHeight = maxPoint.y - minPoint.y;
+
+            var normalizedTwoDimentionalDrawPoints = TwoDimentionalDrawPoints
+                .Select(point => new Vector2((280 * (point.x - minPoint.x) / originalWidth) + 10, (280 * (point.y - minPoint.y) / originalHeight) + 10))
+                .ToList();
+
+            for (int i = 0; i < normalizedTwoDimentionalDrawPoints.Count - 1; i++)
+            {
+                DrawLineOnTexture(texture, normalizedTwoDimentionalDrawPoints[i], normalizedTwoDimentionalDrawPoints[i + 1], Color.black);
+            }
+
+            texture.Apply();
+
+            byte[] bytes = texture.EncodeToPNG();
+
+            var uniqueFileName = GetUniqueName("shape", Application.dataPath + "/../Shapes/", ".png");
+            File.WriteAllBytes(Application.dataPath + "/../Shapes/" + uniqueFileName, bytes);
+        }
+    }
+
+    public void DrawLineOnTexture(Texture2D texture, Vector2 p1, Vector2 p2, Color color)
+    {
+        Vector2 drawPoint = p1;
+        float frac = 1 / Mathf.Sqrt(Mathf.Pow(p2.x - p1.x, 2) + Mathf.Pow(p2.y - p1.y, 2));
+        float ctr = 0;
+
+        while ((int)drawPoint.x != (int)p2.x || (int)drawPoint.y != (int)p2.y)
+        {
+            drawPoint = Vector2.Lerp(p1, p2, ctr);
+            ctr += frac;
+            texture.SetPixel((int)drawPoint.x, (int)drawPoint.y, color);
+        }
     }
 
     public void OnPointerClicked(MixedRealityPointerEventData eventData)
     {
+    }
+
+    private string GetUniqueName(string name, string folderPath, string extension)
+    {
+        string validatedName = name + extension;
+        int tries = 1;
+        while (File.Exists(folderPath + validatedName))
+        {
+            validatedName = string.Format("{0}_{1:00000}{2}", name, tries++, extension);
+        }
+        return validatedName;
     }
 }
