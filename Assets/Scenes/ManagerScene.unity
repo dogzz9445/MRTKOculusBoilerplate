@@ -203,6 +203,7 @@ MonoBehaviour:
   FixedPlaneDistance: 10
   FixedPlaneLineRenderer: {fileID: 0}
   FixedPlaneLineWidth: 0.005
+  TwoDimentionalDrawPoints: []
 --- !u!4 &863151912
 Transform:
   m_ObjectHideFlags: 0

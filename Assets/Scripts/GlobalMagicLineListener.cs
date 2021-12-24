@@ -92,11 +92,56 @@ public class GlobalMagicLineListener : MonoBehaviour,
     public void OnHandJointsUpdated(
         InputEventData<IDictionary<TrackedHandJoint, MixedRealityPose>> eventData)
     {
-        //MixedRealityPose palmPose;
-        //if (eventData.InputData.TryGetValue(TrackedHandJoint.Palm, out palmPose))
-        //{
-        //    Debug.Log("Hand Joint Palm Updated: " + palmPose.Position);
-        //}
+        MixedRealityPose palmPose;
+        MixedRealityPose thumbTipPose;
+        MixedRealityPose indexTipPose;
+        MixedRealityPose middleTipPose;
+        MixedRealityPose ringTipPose;
+        MixedRealityPose pinkyTipPose;
+
+        if (!eventData.InputData.TryGetValue(TrackedHandJoint.Palm, out palmPose))
+            return;
+        if (!eventData.InputData.TryGetValue(TrackedHandJoint.ThumbTip, out thumbTipPose))
+            return;
+        if (!eventData.InputData.TryGetValue(TrackedHandJoint.IndexTip, out indexTipPose))
+            return;
+        if (!eventData.InputData.TryGetValue(TrackedHandJoint.MiddleTip, out middleTipPose))
+            return;
+        if (!eventData.InputData.TryGetValue(TrackedHandJoint.RingTip, out ringTipPose))
+            return;
+        if (!eventData.InputData.TryGetValue(TrackedHandJoint.PinkyTip, out pinkyTipPose))
+            return;
+
+        // ¼Õ¹Ù´Ú ¹æÇâ
+        // (-palmPose.Up)
+
+        float cos;
+        float cos_to_anlge;
+        Vector3 yUpVector = new Vector3(0, 1, 0);
+
+        cos = Vector3.Dot((-palmPose.Up), yUpVector) / ((-palmPose.Up).magnitude * yUpVector.magnitude);
+        cos_to_anlge = Mathf.Acos(cos) * Mathf.Rad2Deg;
+        Debug.LogFormat("Palm: angle between two Vectors -> cos {0}, angle {1}", cos, cos_to_anlge);
+
+        cos = Vector3.Dot((-thumbTipPose.Up), yUpVector) / ((-thumbTipPose.Up).magnitude * yUpVector.magnitude);
+        cos_to_anlge = Mathf.Acos(cos) * Mathf.Rad2Deg;
+        Debug.LogFormat("ThumbTip: angle between two Vectors -> cos {0}, angle {1}", cos, cos_to_anlge);
+
+        cos = Vector3.Dot((-indexTipPose.Up), yUpVector) / ((-indexTipPose.Up).magnitude * yUpVector.magnitude);
+        cos_to_anlge = Mathf.Acos(cos) * Mathf.Rad2Deg;
+        Debug.LogFormat("IndexTip: angle between two Vectors -> cos {0}, angle {1}", cos, cos_to_anlge);
+
+        cos = Vector3.Dot((-middleTipPose.Up), yUpVector) / ((-middleTipPose.Up).magnitude * yUpVector.magnitude);
+        cos_to_anlge = Mathf.Acos(cos) * Mathf.Rad2Deg;
+        Debug.LogFormat("MiddleTip: angle between two Vectors -> cos {0}, angle {1}", cos, cos_to_anlge);
+
+        cos = Vector3.Dot((-ringTipPose.Up), yUpVector) / ((-ringTipPose.Up).magnitude * yUpVector.magnitude);
+        cos_to_anlge = Mathf.Acos(cos) * Mathf.Rad2Deg;
+        Debug.LogFormat("RingTip: angle between two Vectors -> cos {0}, angle {1}", cos, cos_to_anlge);
+
+        cos = Vector3.Dot((-pinkyTipPose.Up), yUpVector) / ((-pinkyTipPose.Up).magnitude * yUpVector.magnitude);
+        cos_to_anlge = Mathf.Acos(cos) * Mathf.Rad2Deg;
+        Debug.LogFormat("PinkyTip: angle between two Vectors -> cos {0}, angle {1}", cos, cos_to_anlge);
     }
 
     public void OnActionStarted(BaseInputEventData eventData)
