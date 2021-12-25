@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Common;
 using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.Utilities;
@@ -21,11 +22,15 @@ public class GlobalMagicLineListener : MonoBehaviour,
     private GameObject LineDrawObject;
     public GameObject FixedPlanePrefab;
 
+    public bool IsWizard = true;
+    public bool IsDoctorStrange = false;
+
     public bool IsOnFocusRightHand { get; private set; }
     public bool IsOnFocusLeftHand { get; private set; }
     public bool IsDrawingLine { get; private set; }
 
     public Camera FixedMainCamera = null;
+    private TransformData FixedTransformData;
     public GameObject FixedPlane = null;
     public float FixedPlaneDistance = 5.5f;
     public LineRenderer FixedPlaneLineRenderer;
@@ -188,6 +193,10 @@ public class GlobalMagicLineListener : MonoBehaviour,
                 FixedMainCamera.CopyFrom(Camera.main);
                 FixedMainCamera.targetDisplay = 2;
                 FixedPlane = Instantiate(FixedPlanePrefab);
+                // 1
+                FixedTransformData = new TransformData(Camera.main.transform);
+                //FixedPlane.transform.Translate(FixedTransformData.LocalPosition + FixedTransformData.LocalEulerAngles * FixedPlaneDistance);
+                // 2
                 FixedPlane.transform.Translate(FixedMainCamera.ScreenToWorldPoint(new Vector3(FixedMainCamera.pixelWidth / 2.0f, FixedMainCamera.pixelHeight / 2.0f, FixedPlaneDistance)));
                 FixedPlane.transform.forward = FixedMainCamera.transform.forward;
                 FixedPlane.transform.Rotate(new Vector3(90.0f, 0.0f, 0.0f));
@@ -197,14 +206,14 @@ public class GlobalMagicLineListener : MonoBehaviour,
             }
 
         }
-        if (!IsOnFocusLeftHand)
-        {
-            if (!IsDrawingLine)
-            {
-                IsDrawingLine = true;
-                FixedMainCamera.CopyFrom(Camera.main);
-            }
-        }
+        //if (!IsOnFocusLeftHand)
+        //{
+        //    if (!IsDrawingLine)
+        //    {
+        //        IsDrawingLine = true;
+        //        FixedMainCamera.CopyFrom(Camera.main);
+        //    }
+        //}
     }
 
     public void OnPointerDragged(MixedRealityPointerEventData eventData)
