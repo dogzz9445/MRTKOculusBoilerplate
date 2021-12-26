@@ -26,5 +26,16 @@ namespace Common
             transform.localEulerAngles = LocalEulerAngles;
             transform.localScale = LocalScale;
         }
+
+        public bool Compare(Transform transform)
+        {
+            if (transform.localPosition != LocalPosition)
+                return false;
+            if (transform.localEulerAngles != LocalEulerAngles)
+                return false;
+            if (transform.localScale != LocalScale)
+                return false;
+            return true;
+        }
     }
 }
