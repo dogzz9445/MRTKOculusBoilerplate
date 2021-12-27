@@ -313,12 +313,16 @@ public class GlobalMagicLineListener : MonoBehaviour,
         Vector2 drawPoint = p1;
         float frac = 1 / Mathf.Sqrt(Mathf.Pow(p2.x - p1.x, 2) + Mathf.Pow(p2.y - p1.y, 2));
         float ctr = 0;
+        int radius = 3;
 
         while ((int)drawPoint.x != (int)p2.x || (int)drawPoint.y != (int)p2.y)
         {
             drawPoint = Vector2.Lerp(p1, p2, ctr);
             ctr += frac;
-            texture.SetPixel((int)drawPoint.x, (int)drawPoint.y, color);
+            for (int y = -radius; y <= radius; y++)
+                for (int x = -radius; x <= radius; x++)
+                    if (x * x + y * y <= radius * radius)
+                        texture.SetPixel((int)drawPoint.x + x, (int)drawPoint.y + y, color);
         }
     }
 
