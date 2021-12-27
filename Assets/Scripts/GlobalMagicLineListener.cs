@@ -28,6 +28,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
     public bool IsOnFocusRightHand { get; private set; }
     public bool IsOnFocusLeftHand { get; private set; }
     public bool IsDrawingLine { get; private set; }
+    public bool IsDrawingDrStrangeCircle { get; private set; }
 
     public Camera FixedMainCamera = null;
     private TransformData FixedTransformData;
@@ -40,11 +41,20 @@ public class GlobalMagicLineListener : MonoBehaviour,
 
     public List<Vector3> TwoDimentionalDrawPoints = new List<Vector3>();
 
+    private MixedRealityPose palmPose;
+    private MixedRealityPose thumbTipPose;
+    private MixedRealityPose indexTipPose;
+    private MixedRealityPose middleTipPose;
+    private MixedRealityPose ringTipPose;
+    private MixedRealityPose pinkyTipPose;
+
+
     private void Start()
     {
         IsOnFocusRightHand = false;
         IsOnFocusLeftHand = false;
         IsDrawingLine = false;
+        IsDrawingDrStrangeCircle = false;
         FixedMainCamera = new GameObject("FixedMainCamera").AddComponent<Camera>();
         FixedMainCamera.targetDisplay = 2;
     }
@@ -97,56 +107,67 @@ public class GlobalMagicLineListener : MonoBehaviour,
     public void OnHandJointsUpdated(
         InputEventData<IDictionary<TrackedHandJoint, MixedRealityPose>> eventData)
     {
-        MixedRealityPose palmPose;
-        MixedRealityPose thumbTipPose;
-        MixedRealityPose indexTipPose;
-        MixedRealityPose middleTipPose;
-        MixedRealityPose ringTipPose;
-        MixedRealityPose pinkyTipPose;
+        if (IsDoctorStrange)
+        {
+            if (eventData.Handedness == Handedness.Left)
+            {
+                if (!eventData.InputData.TryGetValue(TrackedHandJoint.Palm, out palmPose))
+                    return;
+                if (!eventData.InputData.TryGetValue(TrackedHandJoint.ThumbTip, out thumbTipPose))
+                    return;
+                if (!eventData.InputData.TryGetValue(TrackedHandJoint.IndexTip, out indexTipPose))
+                    return;
+                if (!eventData.InputData.TryGetValue(TrackedHandJoint.MiddleTip, out middleTipPose))
+                    return;
+                if (!eventData.InputData.TryGetValue(TrackedHandJoint.RingTip, out ringTipPose))
+                    return;
+                if (!eventData.InputData.TryGetValue(TrackedHandJoint.PinkyTip, out pinkyTipPose))
+                    return;
 
-        if (!eventData.InputData.TryGetValue(TrackedHandJoint.Palm, out palmPose))
-            return;
-        if (!eventData.InputData.TryGetValue(TrackedHandJoint.ThumbTip, out thumbTipPose))
-            return;
-        if (!eventData.InputData.TryGetValue(TrackedHandJoint.IndexTip, out indexTipPose))
-            return;
-        if (!eventData.InputData.TryGetValue(TrackedHandJoint.MiddleTip, out middleTipPose))
-            return;
-        if (!eventData.InputData.TryGetValue(TrackedHandJoint.RingTip, out ringTipPose))
-            return;
-        if (!eventData.InputData.TryGetValue(TrackedHandJoint.PinkyTip, out pinkyTipPose))
-            return;
+                if (!IsDrawingDrStrangeCircle)
+                {
+                    if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, Camera.main.transform.forward, 90.0f))
+                    {
+                        IsDrawingDrStrangeCircle = true;
+                        StartCoroutine(StartDrStrangePortal());
+                    }
+                }
+            }
+        }
 
-        // ¼Õ¹Ù´Ú ¹æÇâ
-        // (-palmPose.Up)
+        if (IsWizard)
+        {
+            if (eventData.Handedness == Handedness.Right)
+            {
+            }
+        }
+    }
 
-        float cos;
-        float cos_to_anlge;
-        Vector3 yUpVector = new Vector3(0, 1, 0);
+    private IEnumerator StartDrStrangePortal()
+    {
+        //prefab.Instantiate()
+        while (IsDrawingDrStrangeCircle)
+        {
+            if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, Camera.main.transform.forward, 90.0f))
+            {
+                yield return new WaitForSeconds(1.0f);
+            }
+            else
+            {
+                // destroy prefab
+                IsDrawingDrStrangeCircle = false;
+            }
+        }
+    }
 
-        cos = Vector3.Dot((-palmPose.Up), yUpVector) / ((-palmPose.Up).magnitude * yUpVector.magnitude);
-        cos_to_anlge = Mathf.Acos(cos) * Mathf.Rad2Deg;
-        Debug.LogFormat("Palm: angle between two Vectors -> cos {0}, angle {1}", cos, cos_to_anlge);
-
-        cos = Vector3.Dot((-thumbTipPose.Up), yUpVector) / ((-thumbTipPose.Up).magnitude * yUpVector.magnitude);
-        cos_to_anlge = Mathf.Acos(cos) * Mathf.Rad2Deg;
-        Debug.LogFormat("ThumbTip: angle between two Vectors -> cos {0}, angle {1}", cos, cos_to_anlge);
-
-        cos = Vector3.Dot((-indexTipPose.Up), yUpVector) / ((-indexTipPose.Up).magnitude * yUpVector.magnitude);
-        cos_to_anlge = Mathf.Acos(cos) * Mathf.Rad2Deg;
-        Debug.LogFormat("IndexTip: angle between two Vectors -> cos {0}, angle {1}", cos, cos_to_anlge);
-
-        cos = Vector3.Dot((-middleTipPose.Up), yUpVector) / ((-middleTipPose.Up).magnitude * yUpVector.magnitude);
-        cos_to_anlge = Mathf.Acos(cos) * Mathf.Rad2Deg;
-        Debug.LogFormat("MiddleTip: angle between two Vectors -> cos {0}, angle {1}", cos, cos_to_anlge);
-
-        cos = Vector3.Dot((-ringTipPose.Up), yUpVector) / ((-ringTipPose.Up).magnitude * yUpVector.magnitude);
-        cos_to_anlge = Mathf.Acos(cos) * Mathf.Rad2Deg;
-        Debug.LogFormat("RingTip: angle between two Vectors -> cos {0}, angle {1}", cos, cos_to_anlge);
-
-        cos = Vector3.Dot((-pinkyTipPose.Up), yUpVector) / ((-pinkyTipPose.Up).magnitude * yUpVector.magnitude);
-        cos_to_anlge = Mathf.Acos(cos) * Mathf.Rad2Deg;
-        Debug.LogFormat("PinkyTip: angle between two Vectors -> cos {0}, angle {1}", cos, cos_to_anlge);
+    public bool CalculateAnglePalmDirection(List<MixedRealityPose> tips, Vector3 direction, float angleThreshold)
+    {
+        foreach(var tip in tips)
+        {
+            if (Mathf.Abs(Vector3.SignedAngle(-tip.Up, direction, Vector3.up)) > angleThreshold)
+                return false;
+        }
+        return true;
     }
 
     public void OnActionStarted(BaseInputEventData eventData)
