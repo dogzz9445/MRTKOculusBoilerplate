@@ -9,10 +9,44 @@ using UnityEngine.VFX;
 [ExecuteInEditMode]
 public class MagicPortal : MonoBehaviour
 {
+    // ºñÁê¾ó ÀÌÆåÆ®
     public VisualEffect m_visualEffect;
     public TransformData m_transformData;
     public float m_radius;
     public float m_maxRadius;
+
+    // Æ÷Å»
+    [field: SerializeField]
+    public MagicPortal OtherPortal { get; private set; }
+
+    [SerializeField]
+    private Renderer outllineRenderer;
+
+    [field: SerializeField]
+    public Color PortalColour { get; private set; }
+
+    [SerializeField]
+    private LayerMask placementMask;
+
+    [SerializeField]
+    private Transform testTransform;
+
+    public bool IsPlaced { get; private set; } = false;
+    private Collider wallCollider;
+
+    public Renderer Renderer { get; private set; }
+    private new BoxCollider collider;
+
+    private void Awake()
+    {
+        collider = GetComponent<BoxCollider>();
+        Renderer = GetComponent<Renderer>();
+    }
+
+    private void Start()
+    {
+        gameObject.SetActive(false);
+    }
 
     private void OnEnable()
     {
@@ -38,6 +72,19 @@ public class MagicPortal : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        //Renderer.enabled = OtherPortal.IsPlaced;
+
+        //for (int i = 0; i < portalObjects.Count; ++i)
+        //{
+        //    Vector3 objPos = transform.InverseTransformPoint(portalObjects[i].transform.position);
+
+        //    if (objPos.z > 0.0f)
+        //    {
+        //        portalObjects[i].Warp();
+        //    }
+        //}
+
         if (m_visualEffect == null)
         {
             m_visualEffect = GetComponent<VisualEffect>();
@@ -55,5 +102,48 @@ public class MagicPortal : MonoBehaviour
         }
 
         m_visualEffect.SetFloat("Radius", m_radius);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        //var obj = other.GetComponent<PortalableObject>();
+        //if (obj != null)
+        //{
+        //    portalObjects.Add(obj);
+        //    obj.SetIsInPortal(this, OtherPortal, wallCollider);
+        //}
+    }
+
+    public bool PlacePortal(Collider wallColider, Vector3 pos, Quaternion rot)
+    {
+        testTransform.position = pos;
+        testTransform.rotation = rot;
+        testTransform.position -= testTransform.forward * 0.001f;
+
+        FixOverhangs();
+        //FixIntersects();
+
+        //if (CheckOverlap())
+        //{
+        //    this.wallCollider = wallCollider;
+        //    transform.position = testTransform.position;
+        //    transform.rotation = testTransform.rotation;
+
+        //    gameObject.SetActive(true);
+        //    IsPlaced = true;
+        //    return true;
+        //}
+
+        return false;
+    }
+
+    private void FixOverhangs()
+    {
+        //var testPoints = new List<Vector3>
+        //{
+        //    new Vector3(-1.1f, 0.0f, 0.1f),
+        //    new Vector3(1.1f, 0.0f, 0.1f),
+
+        //}
     }
 }
