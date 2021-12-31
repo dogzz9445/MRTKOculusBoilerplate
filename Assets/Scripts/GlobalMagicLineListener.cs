@@ -266,6 +266,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
         {
             IsDrawingLine = false;
 
+            // 
             TwoDimentionalDrawPoints.Clear();
             foreach (var worldPoint in FixedPlaneDrawPoints)
             {
@@ -273,25 +274,26 @@ public class GlobalMagicLineListener : MonoBehaviour,
             }
             FixedPlaneDrawPoints.Clear();
 
-            Texture2D texture = new Texture2D(300, 300);
+            int imageSize = 300;
+            int margin = 10;
+            float imageRealSize = imageSize - margin * 2;
+            float halfImageRealSize = imageRealSize / 2;
             var fillColor = Color.white;
-            var fillColorArray = texture.GetPixels();
 
-            for (var i = 0; i < fillColorArray.Length; ++i)
-            {
-                fillColorArray[i] = fillColor;
-            }
+            Texture2D texture = new Texture2D(imageSize, imageSize);
+            texture.SetPixels(texture.GetPixels().Select(color => color = fillColor).ToArray());
 
-            texture.SetPixels(fillColorArray);
-
-            // if width < 300, height < 300
             Vector2 maxPoint = new Vector2(TwoDimentionalDrawPoints.Max(x => x.x), TwoDimentionalDrawPoints.Max(x => x.y));
             Vector2 minPoint = new Vector2(TwoDimentionalDrawPoints.Min(x => x.x), TwoDimentionalDrawPoints.Min(x => x.y));
-            float originalWidth = maxPoint.x - minPoint.x;
+            float originalWidth  = maxPoint.x - minPoint.x;
             float originalHeight = maxPoint.y - minPoint.y;
+            float originalSize  = Mathf.Max(originalWidth, originalHeight);
+            float topMargin = margin + (halfImageRealSize - halfImageRealSize / originalSize * originalHeight);
+            float leftMargin = margin + (halfImageRealSize - halfImageRealSize / originalSize * originalWidth);
 
             var normalizedTwoDimentionalDrawPoints = TwoDimentionalDrawPoints
-                .Select(point => new Vector2((280 * (point.x - minPoint.x) / originalWidth) + 10, (280 * (point.y - minPoint.y) / originalHeight) + 10))
+                .Select(point => new Vector2((imageRealSize * (point.x - minPoint.x) / originalSize) + leftMargin, 
+                                             (imageRealSize * (point.y - minPoint.y) / originalSize) + topMargin))
                 .ToList();
 
             for (int i = 0; i < normalizedTwoDimentionalDrawPoints.Count - 1; i++)
