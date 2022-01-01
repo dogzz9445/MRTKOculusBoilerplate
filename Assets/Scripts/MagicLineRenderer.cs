@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
-using Common;
+using WizardSystem.Common;
 
 namespace WizardSystem
 {
@@ -11,7 +11,7 @@ namespace WizardSystem
     /// Render in 3D a curved line based on its control points.
     /// </summary>
     [RequireComponent(typeof(LineRenderer))]
-    public class CurvedLineRenderer : MonoBehaviour
+    public class MagicLineRenderer : MonoBehaviour
     {
         /// <summary>
         /// Size of line segments (in meters) used to approximate the curve.
