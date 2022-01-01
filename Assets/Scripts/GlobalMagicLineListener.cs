@@ -81,6 +81,13 @@ public class GlobalMagicLineListener : MonoBehaviour,
         CoreServices.InputSystem?.UnregisterHandler<IMixedRealityPointerHandler>(this);
     }
 
+    private void Update()
+    {
+        // TODO:
+        // 그리고 있을때 시간에 따라서 주기적으로 스무딩
+        // 뺄수있으면 코루틴으로
+    }
+
     // IMixedRealitySourceStateHandler interface
     public void OnSourceDetected(SourceStateEventData eventData)
     {
@@ -104,8 +111,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
         }
     }
 
-    public void OnHandJointsUpdated(
-        InputEventData<IDictionary<TrackedHandJoint, MixedRealityPose>> eventData)
+    public void OnHandJointsUpdated(InputEventData<IDictionary<TrackedHandJoint, MixedRealityPose>> eventData)
     {
         if (IsDoctorStrange)
         {
