@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Common;
 
-namespace EasyCurvedLine
+namespace WizardSystem
 {
     /// <summary>
     /// Render in 3D a curved line based on its control points.

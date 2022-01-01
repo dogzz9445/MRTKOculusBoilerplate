@@ -7,7 +7,7 @@ using System.Collections.Generic;
 /// <summary>
 /// Data structures and rendering methods for editing and rendering a curved line in 3D.
 /// </summary>
-namespace Common
+namespace WizardSystem.Common
 {
     /// <summary>
     /// Utility class for line smoothing.
