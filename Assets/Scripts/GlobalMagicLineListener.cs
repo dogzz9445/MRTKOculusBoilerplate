@@ -126,10 +126,11 @@ public class GlobalMagicLineListener : MonoBehaviour,
 
                 if (!IsDrawingDrStrangeCircle)
                 {
-                    if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, Camera.main.transform.forward, 90.0f))
+                    var direction = Camera.main.transform.forward;
+                    if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, direction, 90.0f))
                     {
                         IsDrawingDrStrangeCircle = true;
-                        StartCoroutine(StartDrStrangePortal());
+                        StartCoroutine(StartDrStrangePortal(direction));
                     }
                 }
             }
@@ -143,12 +144,12 @@ public class GlobalMagicLineListener : MonoBehaviour,
         }
     }
 
-    private IEnumerator StartDrStrangePortal()
+    private IEnumerator StartDrStrangePortal(Vector3 direction)
     {
         //prefab.Instantiate()
         while (IsDrawingDrStrangeCircle)
         {
-            if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, Camera.main.transform.forward, 90.0f))
+            if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, direction, 90.0f))
             {
                 yield return new WaitForSeconds(1.0f);
             }
@@ -225,16 +226,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
                 FixedPlaneLineRenderer = LineDrawObject.GetComponent<LineRenderer>();
                 FixedPlaneLineRenderer.positionCount = 0;
             }
-
         }
-        //if (!IsOnFocusLeftHand)
-        //{
-        //    if (!IsDrawingLine)
-        //    {
-        //        IsDrawingLine = true;
-        //        FixedMainCamera.CopyFrom(Camera.main);
-        //    }
-        //}
     }
 
     public void OnPointerDragged(MixedRealityPointerEventData eventData)
@@ -274,57 +266,11 @@ public class GlobalMagicLineListener : MonoBehaviour,
             }
             FixedPlaneDrawPoints.Clear();
 
-            int imageSize = 300;
-            int margin = 10;
-            float imageRealSize = imageSize - margin * 2;
-            float halfImageRealSize = imageRealSize / 2;
-            var fillColor = Color.white;
+            TextureImage image = new TextureImage();
+            image.DrawLines(TwoDimentionalDrawPoints);
 
-            Texture2D texture = new Texture2D(imageSize, imageSize);
-            texture.SetPixels(texture.GetPixels().Select(color => color = fillColor).ToArray());
-
-            Vector2 maxPoint = new Vector2(TwoDimentionalDrawPoints.Max(x => x.x), TwoDimentionalDrawPoints.Max(x => x.y));
-            Vector2 minPoint = new Vector2(TwoDimentionalDrawPoints.Min(x => x.x), TwoDimentionalDrawPoints.Min(x => x.y));
-            float originalWidth  = maxPoint.x - minPoint.x;
-            float originalHeight = maxPoint.y - minPoint.y;
-            float originalSize  = Mathf.Max(originalWidth, originalHeight);
-            float topMargin = margin + (halfImageRealSize - halfImageRealSize / originalSize * originalHeight);
-            float leftMargin = margin + (halfImageRealSize - halfImageRealSize / originalSize * originalWidth);
-
-            var normalizedTwoDimentionalDrawPoints = TwoDimentionalDrawPoints
-                .Select(point => new Vector2((imageRealSize * (point.x - minPoint.x) / originalSize) + leftMargin, 
-                                             (imageRealSize * (point.y - minPoint.y) / originalSize) + topMargin))
-                .ToList();
-
-            for (int i = 0; i < normalizedTwoDimentionalDrawPoints.Count - 1; i++)
-            {
-                DrawLineOnTexture(texture, normalizedTwoDimentionalDrawPoints[i], normalizedTwoDimentionalDrawPoints[i + 1], Color.black);
-            }
-
-            texture.Apply();
-
-            byte[] bytes = texture.EncodeToPNG();
-
-            var uniqueFileName = GetUniqueName("shape", Application.dataPath + "/../Shapes/", ".png");
-            File.WriteAllBytes(Application.dataPath + "/../Shapes/" + uniqueFileName, bytes);
-        }
-    }
-
-    public void DrawLineOnTexture(Texture2D texture, Vector2 p1, Vector2 p2, Color color)
-    {
-        Vector2 drawPoint = p1;
-        float frac = 1 / Mathf.Sqrt(Mathf.Pow(p2.x - p1.x, 2) + Mathf.Pow(p2.y - p1.y, 2));
-        float ctr = 0;
-        int radius = 3;
-
-        while ((int)drawPoint.x != (int)p2.x || (int)drawPoint.y != (int)p2.y)
-        {
-            drawPoint = Vector2.Lerp(p1, p2, ctr);
-            ctr += frac;
-            for (int y = -radius; y <= radius; y++)
-                for (int x = -radius; x <= radius; x++)
-                    if (x * x + y * y <= radius * radius)
-                        texture.SetPixel((int)drawPoint.x + x, (int)drawPoint.y + y, color);
+            var uniqueFileName = FileGenerator.GetUniqueName("shape", Application.dataPath + "/../Shapes/", ".png");
+            File.WriteAllBytes(Application.dataPath + "/../Shapes/" + uniqueFileName, image.GetRawImage());
         }
     }
 
@@ -332,14 +278,4 @@ public class GlobalMagicLineListener : MonoBehaviour,
     {
     }
 
-    private string GetUniqueName(string name, string folderPath, string extension)
-    {
-        string validatedName = name + extension;
-        int tries = 1;
-        while (File.Exists(folderPath + validatedName))
-        {
-            validatedName = string.Format("{0}_{1:00000}{2}", name, tries++, extension);
-        }
-        return validatedName;
-    }
 }
