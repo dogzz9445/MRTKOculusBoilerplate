@@ -13,11 +13,12 @@ namespace WizardSystem
     [RequireComponent(typeof(LineRenderer))]
     public class MagicLineRenderer : MonoBehaviour
     {
+        const float DISTANCE_WEIGHT = 0.07071067811865475f;
         /// <summary>
         /// Size of line segments (in meters) used to approximate the curve.
         /// </summary>
         [Tooltip("Size of line segments (in meters) used to approximate the curve")]
-        public float lineSegmentSize = 0.15f;
+        public float lineSegmentSize = 15.15f;
 
         /// <summary>
         /// Thickness of the line (initial thickness if useCustomEndWidth is true).
@@ -25,17 +26,7 @@ namespace WizardSystem
         [Tooltip("Width of the line (initial width if useCustomEndWidth is true)")]
         public float lineWidth = 0.1f;
 
-        /// <summary>
-        /// Use a different thickness for the line end.
-        /// </summary>
-        [Tooltip("Enable this to set a custom width for the line end")]
-        public bool useCustomEndWidth = false;
-
-        /// <summary>
-        /// Thickness of the line at its end point (initial thickness is lineWidth).
-        /// </summary>
-        [Tooltip("Custom width for the line end")]
-        public float endWidth = 0.1f;
+        private float distanceLineWidth = 0.1f;
 
         /// <summary>
         /// Automatically update the line.
@@ -49,31 +40,10 @@ namespace WizardSystem
         [Tooltip("Allow editing width directly on curve graph.")]
         public bool allowWidthEditOnCurveGraph = true;
 
-        [Header("Gizmos")]
-
-        /// <summary>
-        /// Show gizmos at control points in Unity Editor.
-        /// </summary>
-        [Tooltip("Show gizmos at control points.")]
-        public bool showGizmos = true;
-
-        /// <summary>
-        /// Size of the gizmos of control points.
-        /// </summary>
-        [Tooltip("Size of the gizmos of control points.")]
-        public float gizmoSize = 0.1f;
-
-        /// <summary>
-        /// Color for rendering the gizmos of control points.
-        /// </summary>
-        [Tooltip("Color for rendering the gizmos of control points.")]
-        public Color gizmoColor = new Color(1, 0, 0, 0.5f);
-
-        private Vector3[] linePoints = new Vector3[0];
-        private Vector3[] linePositions = new Vector3[0];
-        private Vector3[] linePositionsOld = new Vector3[0];
+        private List<Vector3> linePoints = new List<Vector3>();
+        private Vector3[] linePointsOld = new Vector3[0];
+        private Vector3[] smoothedPoints = new Vector3[0];
         private LineRenderer lineRenderer = null;
-        private Material lineRendererMaterial = null;
 
         private float oldLineWidth = 0.0f;
         private float oldEndWidth = 0.0f;
@@ -81,7 +51,7 @@ namespace WizardSystem
         private float oldLineRendererEndWidth = 0.0f;
 
 
-        public Vector3[] LinePoints
+        public List<Vector3> LinePoints
         {
             get
             {
@@ -95,9 +65,7 @@ namespace WizardSystem
         /// </summary>
         public void UpdateLineRenderer()
         {
-            GetPoints();
             SetPointsToLine();
-            UpdateMaterial();
         }
 
 
@@ -118,151 +86,63 @@ namespace WizardSystem
             }
         }
 
-
-        private void GetPoints()
+        public void SetDistance(float distance)
         {
-            // find curved points in children
-            // scan only the first hierarchy level to allow nested curved lines (like modelling a tree or a coral)
-            List<Vector3> curvedLinePoints = new List<Vector3>();
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                Vector3 childPoint = transform.GetChild(i).GetComponent<Vector3>();
-                if (childPoint != null)
-                {
-                    curvedLinePoints.Add(childPoint);
-                }
-            }
-            linePoints = curvedLinePoints.ToArray();
-
-            //add positions
-            if (linePositions.Length != linePoints.Length)
-            {
-                linePositions = new Vector3[linePoints.Length];
-            }
-            for (int i = 0; i < linePoints.Length; i++)
-            {
-                linePositions[i] = linePoints[i];
-            }
+            distanceLineWidth = distance * DISTANCE_WEIGHT * lineWidth;
         }
 
+        public void AddPoint(Vector3 point)
+        {
+            if (linePoints.Count == 0 || linePoints[linePoints.Count - 1] != point)
+            {
+               linePoints.Add(point);
+            }
+        }
 
         private void SetPointsToLine()
         {
             if (allowWidthEditOnCurveGraph)
             {
                 // if the start width was edited directly on the curve
-                if (oldLineWidth == lineWidth && oldLineRendererStartWidth != lineRenderer.startWidth)
+                if (oldLineWidth == distanceLineWidth && 
+                    oldLineRendererStartWidth != lineRenderer.startWidth && 
+                    oldLineRendererEndWidth != lineRenderer.endWidth)
                 {
-                    lineWidth = lineRenderer.startWidth;
-                }
-
-                // if the end width was edited directly on the curve
-                if (oldEndWidth == endWidth && oldLineRendererEndWidth != lineRenderer.endWidth)
-                {
-                    endWidth = lineRenderer.endWidth;
-                    if (endWidth != lineWidth)
-                    {
-                        useCustomEndWidth = true;
-                    }
+                    distanceLineWidth = lineRenderer.startWidth;
                 }
             }
 
-            float actualEndWidth = useCustomEndWidth ? endWidth : lineWidth;
-
             // rebuild the line if any parameter was changed
-            bool rebuild = (lineRenderer.startWidth != lineWidth || lineRenderer.endWidth != actualEndWidth);
+            bool rebuild = (lineRenderer.startWidth != distanceLineWidth || lineRenderer.endWidth != distanceLineWidth);
 
-            if (!rebuild)
+            if (linePointsOld.Length != linePoints.Count)
             {
-                // create old positions if they don't match
-                if (linePositionsOld.Length != linePositions.Length)
-                {
-                    linePositionsOld = new Vector3[linePositions.Length];
-                    rebuild = true;
-                }
-                else
-                {
-                    // check if line points have moved
-                    for (int i = 0; i < linePositions.Length; i++)
-                    {
-                        //compare
-                        if (linePositions[i] != linePositionsOld[i])
-                        {
-                            rebuild = true;
-                            break;
-                        }
-                    }
-                }
+                linePointsOld = new Vector3[linePoints.Count];
+                rebuild = true;
             }
 
             // update if line points were modified
             if (rebuild)
             {
-                linePositions.CopyTo(linePositionsOld, 0);
+                linePoints.CopyTo(linePointsOld, 0);
                 if (lineRenderer == null)
                 {
                     lineRenderer = GetComponent<LineRenderer>();
                 }
 
                 // get smoothed values
-                Vector3[] smoothedPoints = LineSmoother.SmoothLine(linePositions, lineSegmentSize);
+                smoothedPoints = LineSmoother.SmoothLine(linePoints.ToArray(), lineSegmentSize);
 
-                // set line settings
+                Debug.Log("original size: " + linePoints.Count + " smooth : " + smoothedPoints.Length);
                 lineRenderer.positionCount = smoothedPoints.Length;
                 lineRenderer.SetPositions(smoothedPoints);
-                lineRenderer.startWidth = lineWidth;
-                lineRenderer.endWidth = useCustomEndWidth ? endWidth : lineWidth;
+                lineRenderer.startWidth = distanceLineWidth;
+                lineRenderer.endWidth = distanceLineWidth;
 
-                oldLineWidth = lineWidth;
-                oldEndWidth = endWidth;
+                oldLineWidth = distanceLineWidth;
                 oldLineRendererStartWidth = lineRenderer.startWidth;
                 oldLineRendererEndWidth = lineRenderer.endWidth;
             }
-        }
-
-
-        private void OnDrawGizmosSelected()
-        {
-            UpdateLineRenderer();
-        }
-
-
-        private void OnDrawGizmos()
-        {
-            if (linePoints.Length == 0)
-            {
-                GetPoints();
-            }
-
-            //// settings for gizmos
-            //foreach (CurvedLinePoint linePoint in linePoints)
-            //{
-            //    linePoint.showGizmo = showGizmos;
-            //    linePoint.gizmoSize = gizmoSize;
-            //    linePoint.gizmoColor = gizmoColor;
-            //}
-        }
-
-
-        private void UpdateMaterial()
-        {
-            if (lineRenderer == null)
-            {
-                lineRenderer = GetComponent<LineRenderer>();
-            }
-            Material lineMaterial = lineRenderer.sharedMaterial;
-            if (lineRendererMaterial != lineMaterial)
-            {
-                if (lineMaterial != null)
-                {
-                    lineRenderer.generateLightingData = !lineMaterial.shader.name.StartsWith("Unlit");
-                }
-                else
-                {
-                    lineRenderer.generateLightingData = false;
-                }
-            }
-            lineRendererMaterial = lineMaterial;
         }
     }
 }

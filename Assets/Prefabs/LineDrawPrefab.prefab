@@ -9,7 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6614690093748125196}
-  - component: {fileID: 6614690093748125197}
+  - component: {fileID: 379328492982518938}
+  - component: {fileID: -8489039403355972464}
   m_Layer: 0
   m_Name: LineDrawPrefab
   m_TagString: DrawCanvas
@@ -31,7 +32,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!120 &6614690093748125197
+--- !u!120 &379328492982518938
 LineRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -129,3 +130,21 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!114 &-8489039403355972464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6614690093748125186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1507b14887a8ab64abf951692954faf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lineSegmentSize: 0.07
+  lineWidth: 0.1
+  useCustomEndWidth: 0
+  endWidth: 0.1
+  autoUpdate: 1
+  allowWidthEditOnCurveGraph: 1
