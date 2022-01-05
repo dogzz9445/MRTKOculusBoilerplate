@@ -24,13 +24,19 @@ MonoBehaviour:
   useLightingScene: 1
   defaultLightingSceneIndex: 0
   lightingScenes:
-  - Name: DefaultLightingScene
-    Path: Assets/MRTK/Services/SceneSystem/SceneSystemResources/DefaultLightingScene.unity
-    Included: 0
-    BuildIndex: -1
+  - Name: LightingScene
+    Path: Assets/Scenes/LightingScene.unity
+    Included: 1
+    BuildIndex: 1
     Tag: Untagged
-    Asset: {fileID: 102900000, guid: 7e54e36c44f826c438c95da79f8de638, type: 3}
-  contentScenes: []
+    Asset: {fileID: 102900000, guid: 2275f3f7c36532c44bb2089e42e3928c, type: 3}
+  contentScenes:
+  - Name: BaseTemplateScene
+    Path: Assets/Scenes/BaseTemplateScene.unity
+    Included: 1
+    BuildIndex: 2
+    Tag: BaseScene
+    Asset: {fileID: 102900000, guid: 8ca03b5e43f0c494cb0883b209b0f91a, type: 3}
   permittedLightingSceneComponentTypes:
   - reference: UnityEngine.Transform, UnityEngine.CoreModule
   - reference: UnityEngine.GameObject, UnityEngine.CoreModule
@@ -38,14 +44,15 @@ MonoBehaviour:
   - reference: UnityEngine.ReflectionProbe, UnityEngine.CoreModule
   - reference: UnityEngine.LightProbeGroup, UnityEngine.CoreModule
   - reference: UnityEngine.LightProbeProxyVolume, UnityEngine.CoreModule
-  contentTags: []
+  contentTags:
+  - BaseScene
   cachedLightingSettings:
-  - SceneName: DefaultLightingScene
+  - SceneName: LightingScene
     RenderSettings:
-      Fog: 0
+      Fog: 1
       FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       FogMode: 2
-      FogDensity: 0.01
+      FogDensity: 0.13
       LinearFogStart: 0
       LinearFogEnd: 300
       AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -80,4 +87,4 @@ MonoBehaviour:
   editorEnforceSceneOrder: 1
   editorManageLoadedScenes: 1
   editorEnforceLightingSceneTypes: 1
-  editorLightingCacheOutOfDate: 0
+  editorLightingCacheOutOfDate: 1
