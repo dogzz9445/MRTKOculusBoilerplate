@@ -22,7 +22,6 @@ public class GlobalMagicLineListener : MonoBehaviour,
     public GameObject FixedPlanePrefab;
 
     public bool IsWizard = true;
-    public bool IsDoctorStrange = false;
 
     public bool IsOnFocusRightHand { get; private set; }
     public bool IsOnFocusLeftHand { get; private set; }
@@ -37,13 +36,49 @@ public class GlobalMagicLineListener : MonoBehaviour,
 
     private TransformData FixedTransformData;
 
-    private MixedRealityPose palmPose;
-    private MixedRealityPose thumbTipPose;
-    private MixedRealityPose indexTipPose;
-    private MixedRealityPose middleTipPose;
-    private MixedRealityPose ringTipPose;
-    private MixedRealityPose pinkyTipPose;
+    //
+    // Hand poses
+    //
 
+    private Handedness MagicReadyHand = Handedness.Left;
+    private Handedness MagicOperationHand = Handedness.Right;
+
+    private MixedRealityPose palmReadyPose;
+    private MixedRealityPose thumbReadyTipPose;
+    private MixedRealityPose indexReadyTipPose;
+    private MixedRealityPose middleReadyTipPose;
+    private MixedRealityPose ringReadyTipPose;
+    private MixedRealityPose pinkyReadyTipPose;
+
+    private List<MixedRealityPose> GetMagicReadyHandPoses()
+    {
+        return new List<MixedRealityPose> { palmReadyPose, thumbReadyTipPose, indexReadyTipPose, middleReadyTipPose, ringReadyTipPose, pinkyReadyTipPose };
+    }
+
+    private MixedRealityPose palmOperationPose;
+    private MixedRealityPose thumbOperationTipPose;
+    private MixedRealityPose indexOperationTipPose;
+    private MixedRealityPose middleOperationTipPose;
+    private MixedRealityPose ringOperationTipPose;
+    private MixedRealityPose pinkyOperationTipPose;
+
+    private List<MixedRealityPose> GetMagicOperationHandPoses()
+    {
+        return new List<MixedRealityPose> { palmOperationPose, thumbOperationTipPose, indexOperationTipPose, middleOperationTipPose, ringOperationTipPose, pinkyOperationTipPose };
+    }
+
+    private Vector3 MainCameraForward { get => Camera.main.transform.forward; }
+    private Vector3 MainCameraBackward { get => -Camera.main.transform.forward; }
+    private Vector3 LookDown { get => Vector3.down; }
+    private Vector3 LookUp { get => Vector3.up; }
+
+    private bool IsMagicReadyHandLookForward { get => CalculateAnglePalmDirection(GetMagicReadyHandPoses(), MainCameraForward, 90.0f); }
+    private bool IsMagicReadyHandLookBackward { get => CalculateAnglePalmDirection(GetMagicReadyHandPoses(), MainCameraBackward, 90.0f); }
+    private bool IsMagicReadyHandLookDown { get => CalculateAnglePalmDirection(GetMagicReadyHandPoses(), LookDown, 90.0f);  }
+    private bool IsMagicReadyHandLookUp { get => CalculateAnglePalmDirection(GetMagicReadyHandPoses(), LookUp, 90.0f);  }
+
+    public bool IsNormalMagicReady { get => IsMagicReadyHandLookDown && IsMagicReadyHandLookForward; }
+    public bool IsSkillMagicReady { get => IsMagicReadyHandLookUp && IsMagicReadyHandLookBackward; }
 
     private void Start()
     {
@@ -109,39 +144,22 @@ public class GlobalMagicLineListener : MonoBehaviour,
 
     public void OnHandJointsUpdated(InputEventData<IDictionary<TrackedHandJoint, MixedRealityPose>> eventData)
     {
-        if (IsDoctorStrange)
-        {
-            if (eventData.Handedness == Handedness.Left)
-            {
-                if (!eventData.InputData.TryGetValue(TrackedHandJoint.Palm, out palmPose))
-                    return;
-                if (!eventData.InputData.TryGetValue(TrackedHandJoint.ThumbTip, out thumbTipPose))
-                    return;
-                if (!eventData.InputData.TryGetValue(TrackedHandJoint.IndexTip, out indexTipPose))
-                    return;
-                if (!eventData.InputData.TryGetValue(TrackedHandJoint.MiddleTip, out middleTipPose))
-                    return;
-                if (!eventData.InputData.TryGetValue(TrackedHandJoint.RingTip, out ringTipPose))
-                    return;
-                if (!eventData.InputData.TryGetValue(TrackedHandJoint.PinkyTip, out pinkyTipPose))
-                    return;
-
-                if (!IsDrawingDrStrangeCircle)
-                {
-                    var direction = Camera.main.transform.forward;
-                    if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, direction, 90.0f))
-                    {
-                        IsDrawingDrStrangeCircle = true;
-                        StartCoroutine(StartDrStrangePortal(direction));
-                    }
-                }
-            }
-        }
-
         if (IsWizard)
         {
-            if (eventData.Handedness == Handedness.Right)
+            if (eventData.Handedness == MagicReadyHand)
             {
+                if (!eventData.InputData.TryGetValue(TrackedHandJoint.Palm, out palmReadyPose))
+                    return;
+                if (!eventData.InputData.TryGetValue(TrackedHandJoint.ThumbTip, out thumbReadyTipPose))
+                    return;
+                if (!eventData.InputData.TryGetValue(TrackedHandJoint.IndexTip, out indexReadyTipPose))
+                    return;
+                if (!eventData.InputData.TryGetValue(TrackedHandJoint.MiddleTip, out middleReadyTipPose))
+                    return;
+                if (!eventData.InputData.TryGetValue(TrackedHandJoint.RingTip, out ringReadyTipPose))
+                    return;
+                if (!eventData.InputData.TryGetValue(TrackedHandJoint.PinkyTip, out pinkyReadyTipPose))
+                    return;
             }
         }
     }
@@ -151,7 +169,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
         //prefab.Instantiate()
         while (IsDrawingDrStrangeCircle)
         {
-            if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, direction, 90.0f))
+            if (IsNormalMagicReady)
             {
                 yield return new WaitForSeconds(1.0f);
             }
@@ -231,6 +249,17 @@ public class GlobalMagicLineListener : MonoBehaviour,
                 //FixedPlaneLineRenderer.positionCount = 0;
             }
         }
+
+
+        //if (!IsDrawingDrStrangeCircle)
+        //{
+        //    var direction = Camera.main.transform.forward;
+        //    if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, direction, 90.0f))
+        //    {
+        //        IsDrawingDrStrangeCircle = true;
+        //        StartCoroutine(StartDrStrangePortal(direction));
+        //    }
+        //}
     }
 
     public void OnPointerDragged(MixedRealityPointerEventData eventData)
@@ -249,6 +278,16 @@ public class GlobalMagicLineListener : MonoBehaviour,
         if (IsDrawingLine)
         {
             IsDrawingLine = false;
+
+            //if (!IsDrawingDrStrangeCircle)
+            //{
+            //    var direction = Camera.main.transform.forward;
+            //    if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, direction, 90.0f))
+            //    {
+            //        IsDrawingDrStrangeCircle = true;
+            //        StartCoroutine(StartDrStrangePortal(direction));
+            //    }
+            //}
 
             //TwoDimentionalDrawPoints.Clear();
             //foreach (var worldPoint in FixedPlaneDrawPoints)
