@@ -308,4 +308,60 @@ public class GlobalMagicLineListener : MonoBehaviour,
     {
     }
 
+    public bool IsMagicReadyHand(IMixedRealityPointer pointer)
+    {
+        if (MagicReadyHand == Handedness.Right)
+        {
+            if (pointer.PointerName.StartsWith("Right"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else if (MagicReadyHand == Handedness.Left)
+        {
+            if (pointer.PointerName.StartsWith("Left"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    public bool IsMagicOperationHand(IMixedRealityPointer pointer)
+    {
+        if (MagicOperationHand == Handedness.Right)
+        {
+            if (pointer.PointerName.StartsWith("Right"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else if (MagicOperationHand == Handedness.Left) // (MagicReadyHand == Handedness.Left)
+        {
+            if (pointer.PointerName.StartsWith("Left"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
 }
