@@ -31,7 +31,6 @@ public class GlobalMagicLineListener : MonoBehaviour,
     public MagicLineRenderer magicLineRenderer;
     public Camera FixedMainCamera = null;
     public GameObject FixedPlane = null;
-    public RaycastHit FixedPlaneRayCastHit;
     public float FixedPlaneDistance = 5.5f;
 
     private TransformData FixedTransformData;
@@ -80,6 +79,36 @@ public class GlobalMagicLineListener : MonoBehaviour,
     public bool IsNormalMagicReady { get => IsMagicReadyHandLookDown && IsMagicReadyHandLookForward; }
     public bool IsSkillMagicReady { get => IsMagicReadyHandLookUp && IsMagicReadyHandLookBackward; }
 
+    public bool IsOnFocusOperationHand
+    {
+        get 
+        {
+            if (MagicOperationHand == Handedness.Right)
+            {
+                if (IsOnFocusRightHand)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else // (MagicOperationHand == Handedness.Left)
+            {
+                if (IsOnFocusRightHand)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+        }
+    }
+
     private void Start()
     {
         IsOnFocusRightHand = false;
@@ -88,6 +117,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
         IsDrawingDrStrangeCircle = false;
         FixedMainCamera = new GameObject("FixedMainCamera").AddComponent<Camera>();
         FixedMainCamera.targetDisplay = 2;
+        FixedMainCamera.cameraType = CameraType.Preview;
     }
 
     private void OnEnable()
@@ -148,18 +178,12 @@ public class GlobalMagicLineListener : MonoBehaviour,
         {
             if (eventData.Handedness == MagicReadyHand)
             {
-                if (!eventData.InputData.TryGetValue(TrackedHandJoint.Palm, out palmReadyPose))
-                    return;
-                if (!eventData.InputData.TryGetValue(TrackedHandJoint.ThumbTip, out thumbReadyTipPose))
-                    return;
-                if (!eventData.InputData.TryGetValue(TrackedHandJoint.IndexTip, out indexReadyTipPose))
-                    return;
-                if (!eventData.InputData.TryGetValue(TrackedHandJoint.MiddleTip, out middleReadyTipPose))
-                    return;
-                if (!eventData.InputData.TryGetValue(TrackedHandJoint.RingTip, out ringReadyTipPose))
-                    return;
-                if (!eventData.InputData.TryGetValue(TrackedHandJoint.PinkyTip, out pinkyReadyTipPose))
-                    return;
+                eventData.InputData.TryGetValue(TrackedHandJoint.Palm, out palmReadyPose);
+                eventData.InputData.TryGetValue(TrackedHandJoint.ThumbTip, out thumbReadyTipPose);
+                eventData.InputData.TryGetValue(TrackedHandJoint.IndexTip, out indexReadyTipPose);
+                eventData.InputData.TryGetValue(TrackedHandJoint.MiddleTip, out middleReadyTipPose);
+                eventData.InputData.TryGetValue(TrackedHandJoint.RingTip, out ringReadyTipPose);
+                eventData.InputData.TryGetValue(TrackedHandJoint.PinkyTip, out pinkyReadyTipPose);
             }
         }
     }
@@ -227,6 +251,9 @@ public class GlobalMagicLineListener : MonoBehaviour,
 
     public void OnPointerDown(MixedRealityPointerEventData eventData)
     {
+        // 테스트 소스
+        // 배포 시 제거
+        #region test
         if (!IsOnFocusRightHand)
         {
             if (!IsDrawingLine)
@@ -245,30 +272,66 @@ public class GlobalMagicLineListener : MonoBehaviour,
                 LineDrawObject = Instantiate(LineDrawPrefab) as GameObject;
                 magicLineRenderer = LineDrawObject.GetComponent<MagicLineRenderer>();
                 magicLineRenderer.SetDistance(FixedPlaneDistance);
-                //FixedPlaneLineRenderer = LineDrawObject.GetComponent<LineRenderer>();
-                //FixedPlaneLineRenderer.positionCount = 0;
             }
         }
+        #endregion
 
+        if (!IsOnFocusOperationHand)
+        {
+            // 노말 명령
+            if (IsNormalMagicReady)
+            {
+                if (!IsDrawingLine)
+                {
+                    IsDrawingLine = true;
+                    FixedMainCamera.CopyFrom(Camera.main);
+                    FixedMainCamera.targetDisplay = 2;
+                    FixedPlane = Instantiate(FixedPlanePrefab);
+                    // 1
+                    FixedTransformData = new TransformData(Camera.main.transform);
+                    //FixedPlane.transform.Translate(FixedTransformData.LocalPosition + FixedTransformData.LocalEulerAngles * FixedPlaneDistance);
+                    // 2
+                    FixedPlane.transform.Translate(FixedMainCamera.ScreenToWorldPoint(new Vector3(FixedMainCamera.pixelWidth / 2.0f, FixedMainCamera.pixelHeight / 2.0f, FixedPlaneDistance)));
+                    FixedPlane.transform.forward = FixedMainCamera.transform.forward;
+                    FixedPlane.transform.Rotate(new Vector3(90.0f, 0.0f, 0.0f));
+                    LineDrawObject = Instantiate(LineDrawPrefab) as GameObject;
+                    magicLineRenderer = LineDrawObject.GetComponent<MagicLineRenderer>();
+                    magicLineRenderer.SetDistance(FixedPlaneDistance);
+                }
+            }
 
-        //if (!IsDrawingDrStrangeCircle)
-        //{
-        //    var direction = Camera.main.transform.forward;
-        //    if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, direction, 90.0f))
-        //    {
-        //        IsDrawingDrStrangeCircle = true;
-        //        StartCoroutine(StartDrStrangePortal(direction));
-        //    }
-        //}
+            // 
+            if (IsSkillMagicReady)
+            {
+                if (!IsDrawingLine)
+                {
+                    IsDrawingLine = true;
+                    FixedMainCamera.CopyFrom(Camera.main);
+                    FixedMainCamera.targetDisplay = 2;
+                    FixedPlane = Instantiate(FixedPlanePrefab);
+                    // 1
+                    FixedTransformData = new TransformData(Camera.main.transform);
+                    //FixedPlane.transform.Translate(FixedTransformData.LocalPosition + FixedTransformData.LocalEulerAngles * FixedPlaneDistance);
+                    // 2
+                    FixedPlane.transform.Translate(FixedMainCamera.ScreenToWorldPoint(new Vector3(FixedMainCamera.pixelWidth / 2.0f, FixedMainCamera.pixelHeight / 2.0f, FixedPlaneDistance)));
+                    FixedPlane.transform.forward = FixedMainCamera.transform.forward;
+                    FixedPlane.transform.Rotate(new Vector3(90.0f, 0.0f, 0.0f));
+                    LineDrawObject = Instantiate(LineDrawPrefab) as GameObject;
+                    magicLineRenderer = LineDrawObject.GetComponent<MagicLineRenderer>();
+                    magicLineRenderer.SetDistance(FixedPlaneDistance);
+                }
+            }
+        }
     }
 
     public void OnPointerDragged(MixedRealityPointerEventData eventData)
     {
         if (IsDrawingLine)
         {
-            if (Physics.Raycast(eventData.Pointer.Position, eventData.Pointer.Rays[0].Direction, out FixedPlaneRayCastHit))
+            RaycastHit raycastHit;
+            if (Physics.Raycast(eventData.Pointer.Position, eventData.Pointer.Rays[0].Direction, out raycastHit))
             {
-                magicLineRenderer.AddPoint(FixedPlaneRayCastHit.point);
+                magicLineRenderer.AddPoint(raycastHit.point);
             }
         }
     }
@@ -279,28 +342,6 @@ public class GlobalMagicLineListener : MonoBehaviour,
         {
             IsDrawingLine = false;
 
-            //if (!IsDrawingDrStrangeCircle)
-            //{
-            //    var direction = Camera.main.transform.forward;
-            //    if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, direction, 90.0f))
-            //    {
-            //        IsDrawingDrStrangeCircle = true;
-            //        StartCoroutine(StartDrStrangePortal(direction));
-            //    }
-            //}
-
-            //TwoDimentionalDrawPoints.Clear();
-            //foreach (var worldPoint in FixedPlaneDrawPoints)
-            //{
-            //    TwoDimentionalDrawPoints.Add(FixedMainCamera.WorldToScreenPoint(worldPoint));
-            //}
-            //FixedPlaneDrawPoints.Clear();
-
-            //TextureImage image = new TextureImage();
-            //image.DrawLines(TwoDimentionalDrawPoints);
-
-            //var uniqueFileName = FileGenerator.GetUniqueName("shape", Application.dataPath + "/../Shapes/", ".png");
-            //File.WriteAllBytes(Application.dataPath + "/../Shapes/" + uniqueFileName, image.GetRawImage());
         }
     }
 
@@ -364,4 +405,30 @@ public class GlobalMagicLineListener : MonoBehaviour,
         return false;
     }
 
+
+    public void SaveMagicCircle()
+    {
+        //if (!IsDrawingDrStrangeCircle)
+        //{
+        //    var direction = Camera.main.transform.forward;
+        //    if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, direction, 90.0f))
+        //    {
+        //        IsDrawingDrStrangeCircle = true;
+        //        StartCoroutine(StartDrStrangePortal(direction));
+        //    }
+        //}
+
+        //TwoDimentionalDrawPoints.Clear();
+        //foreach (var worldPoint in FixedPlaneDrawPoints)
+        //{
+        //    TwoDimentionalDrawPoints.Add(FixedMainCamera.WorldToScreenPoint(worldPoint));
+        //}
+        //FixedPlaneDrawPoints.Clear();
+
+        //TextureImage image = new TextureImage();
+        //image.DrawLines(TwoDimentionalDrawPoints);
+
+        //var uniqueFileName = FileGenerator.GetUniqueName("shape", Application.dataPath + "/../Shapes/", ".png");
+        //File.WriteAllBytes(Application.dataPath + "/../Shapes/" + uniqueFileName, image.GetRawImage());
+    }
 }
