@@ -576,7 +576,6 @@ MonoBehaviour:
   LineDrawPrefab: {fileID: 6614690093748125186, guid: e2df82fecb42155439616944a62905c6, type: 3}
   FixedPlanePrefab: {fileID: 5683093099553919286, guid: 3ce90aa8fd56ea84eb65078bbcae1e76, type: 3}
   IsWizard: 1
-  IsDoctorStrange: 0
   magicLineRenderer: {fileID: 0}
   FixedMainCamera: {fileID: 0}
   FixedPlane: {fileID: 0}
