@@ -70,5 +70,25 @@ namespace WizardSystem
             image.DrawLines(DrawPoints2D);
             return image;
         }
+
+
+        //public bool IsDrawingDrStrangeCircle { get; private set; }
+        //private IEnumerator StartDrStrangePortal(Vector3 direction)
+        //{
+        //    //prefab.Instantiate()
+        //    while (IsDrawingDrStrangeCircle)
+        //    {
+        //        if (IsNormalMagicReady)
+        //        {
+        //            yield return new WaitForSeconds(1.0f);
+        //        }
+        //        else
+        //        {
+        //            // destroy prefab
+        //            IsDrawingDrStrangeCircle = false;
+        //        }
+        //    }
+        //}
+
     }
 }

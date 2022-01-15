@@ -6,6 +6,7 @@ using Microsoft.MixedReality.Toolkit.Utilities;
 using UnityEngine;
 using UnityEngine.Windows;
 using WizardSystem;
+using WizardSystem.Common;
 
 [RequireComponent(typeof(MagicLineDrawer))]
 public class GlobalMagicLineListener : MonoBehaviour,
@@ -21,7 +22,6 @@ public class GlobalMagicLineListener : MonoBehaviour,
     public bool IsOnFocusRightHand { get; private set; }
     public bool IsOnFocusLeftHand { get; private set; }
     public bool IsDrawingLine { get; private set; }
-    public bool IsDrawingDrStrangeCircle { get; private set; }
 
     MagicLineDrawer magicLineDrawer;
 
@@ -99,12 +99,67 @@ public class GlobalMagicLineListener : MonoBehaviour,
         }
     }
 
+    public bool IsMagicReadyHand(IMixedRealityPointer pointer)
+    {
+        if (MagicReadyHand == Handedness.Right)
+        {
+            if (pointer.PointerName.StartsWith("Right"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else if (MagicReadyHand == Handedness.Left)
+        {
+            if (pointer.PointerName.StartsWith("Left"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    public bool IsMagicOperationHand(IMixedRealityPointer pointer)
+    {
+        if (MagicOperationHand == Handedness.Right)
+        {
+            if (pointer.PointerName.StartsWith("Right"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else if (MagicOperationHand == Handedness.Left) // (MagicReadyHand == Handedness.Left)
+        {
+            if (pointer.PointerName.StartsWith("Left"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
     private void Start()
     {
         IsOnFocusRightHand = false;
         IsOnFocusLeftHand = false;
         IsDrawingLine = false;
-        IsDrawingDrStrangeCircle = false;
         magicLineDrawer = new MagicLineDrawer();
     }
 
@@ -173,22 +228,14 @@ public class GlobalMagicLineListener : MonoBehaviour,
                 eventData.InputData.TryGetValue(TrackedHandJoint.RingTip, out ringReadyTipPose);
                 eventData.InputData.TryGetValue(TrackedHandJoint.PinkyTip, out pinkyReadyTipPose);
             }
-        }
-    }
-
-    private IEnumerator StartDrStrangePortal(Vector3 direction)
-    {
-        //prefab.Instantiate()
-        while (IsDrawingDrStrangeCircle)
-        {
-            if (IsNormalMagicReady)
+            else if (eventData.Handedness == MagicOperationHand)
             {
-                yield return new WaitForSeconds(1.0f);
-            }
-            else
-            {
-                // destroy prefab
-                IsDrawingDrStrangeCircle = false;
+                eventData.InputData.TryGetValue(TrackedHandJoint.Palm, out palmOperationPose);
+                eventData.InputData.TryGetValue(TrackedHandJoint.ThumbTip, out thumbOperationTipPose);
+                eventData.InputData.TryGetValue(TrackedHandJoint.IndexTip, out indexOperationTipPose);
+                eventData.InputData.TryGetValue(TrackedHandJoint.MiddleTip, out middleOperationTipPose);
+                eventData.InputData.TryGetValue(TrackedHandJoint.RingTip, out ringOperationTipPose);
+                eventData.InputData.TryGetValue(TrackedHandJoint.PinkyTip, out pinkyOperationTipPose);
             }
         }
     }
@@ -198,7 +245,9 @@ public class GlobalMagicLineListener : MonoBehaviour,
         foreach(var tip in tips)
         {
             if (Mathf.Abs(Vector3.SignedAngle(-tip.Up, direction, Vector3.up)) > angleThreshold)
+            {
                 return false;
+            }
         }
         return true;
     }
@@ -291,7 +340,10 @@ public class GlobalMagicLineListener : MonoBehaviour,
         {
             IsDrawingLine = false;
             var image = magicLineDrawer.EndDrawing();
+
             // 이미지 저장
+            var uniqueFileName = FileGenerator.GetUniqueName("shape", Application.dataPath + "/../Shapes/", ".png");
+            File.WriteAllBytes(Application.dataPath + "/../Shapes/" + uniqueFileName, image.GetRawImage());
         }
     }
 
@@ -299,67 +351,4 @@ public class GlobalMagicLineListener : MonoBehaviour,
     {
     }
 
-    public bool IsMagicReadyHand(IMixedRealityPointer pointer)
-    {
-        if (MagicReadyHand == Handedness.Right)
-        {
-            if (pointer.PointerName.StartsWith("Right"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if (MagicReadyHand == Handedness.Left)
-        {
-            if (pointer.PointerName.StartsWith("Left"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        return false;
-    }
-
-    public bool IsMagicOperationHand(IMixedRealityPointer pointer)
-    {
-        if (MagicOperationHand == Handedness.Right)
-        {
-            if (pointer.PointerName.StartsWith("Right"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if (MagicOperationHand == Handedness.Left) // (MagicReadyHand == Handedness.Left)
-        {
-            if (pointer.PointerName.StartsWith("Left"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        return false;
-    }
-
-
-    public void SaveMagicCircle()
-    {
-
-        //var uniqueFileName = FileGenerator.GetUniqueName("shape", Application.dataPath + "/../Shapes/", ".png");
-        //File.WriteAllBytes(Application.dataPath + "/../Shapes/" + uniqueFileName, image.GetRawImage());
-    }
 }
