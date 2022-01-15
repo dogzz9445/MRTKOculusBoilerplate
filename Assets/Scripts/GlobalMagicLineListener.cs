@@ -1,8 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using Common;
 using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.Utilities;
@@ -10,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Windows;
 using WizardSystem;
 
+[RequireComponent(typeof(MagicLineDrawer))]
 public class GlobalMagicLineListener : MonoBehaviour,
     IMixedRealityInputActionHandler,
     IMixedRealitySourceStateHandler, // Handle source detected and lost
@@ -17,9 +15,6 @@ public class GlobalMagicLineListener : MonoBehaviour,
     IMixedRealityFocusHandler,
     IMixedRealityPointerHandler
 {
-    public GameObject LineDrawPrefab;
-    private GameObject LineDrawObject;
-    public GameObject FixedPlanePrefab;
 
     public bool IsWizard = true;
 
@@ -28,12 +23,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
     public bool IsDrawingLine { get; private set; }
     public bool IsDrawingDrStrangeCircle { get; private set; }
 
-    public MagicLineRenderer magicLineRenderer;
-    public Camera FixedMainCamera = null;
-    public GameObject FixedPlane = null;
-    public float FixedPlaneDistance = 5.5f;
-
-    private TransformData FixedTransformData;
+    MagicLineDrawer magicLineDrawer;
 
     //
     // Hand poses
@@ -115,9 +105,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
         IsOnFocusLeftHand = false;
         IsDrawingLine = false;
         IsDrawingDrStrangeCircle = false;
-        FixedMainCamera = new GameObject("FixedMainCamera").AddComponent<Camera>();
-        FixedMainCamera.targetDisplay = 2;
-        FixedMainCamera.cameraType = CameraType.Preview;
+        magicLineDrawer = new MagicLineDrawer();
     }
 
     private void OnEnable()
@@ -259,19 +247,6 @@ public class GlobalMagicLineListener : MonoBehaviour,
             if (!IsDrawingLine)
             {
                 IsDrawingLine = true;
-                FixedMainCamera.CopyFrom(Camera.main);
-                FixedMainCamera.targetDisplay = 2;
-                FixedPlane = Instantiate(FixedPlanePrefab);
-                // 1
-                FixedTransformData = new TransformData(Camera.main.transform);
-                //FixedPlane.transform.Translate(FixedTransformData.LocalPosition + FixedTransformData.LocalEulerAngles * FixedPlaneDistance);
-                // 2
-                FixedPlane.transform.Translate(FixedMainCamera.ScreenToWorldPoint(new Vector3(FixedMainCamera.pixelWidth / 2.0f, FixedMainCamera.pixelHeight / 2.0f, FixedPlaneDistance)));
-                FixedPlane.transform.forward = FixedMainCamera.transform.forward;
-                FixedPlane.transform.Rotate(new Vector3(90.0f, 0.0f, 0.0f));
-                LineDrawObject = Instantiate(LineDrawPrefab) as GameObject;
-                magicLineRenderer = LineDrawObject.GetComponent<MagicLineRenderer>();
-                magicLineRenderer.SetDistance(FixedPlaneDistance);
             }
         }
         #endregion
@@ -284,19 +259,6 @@ public class GlobalMagicLineListener : MonoBehaviour,
                 if (!IsDrawingLine)
                 {
                     IsDrawingLine = true;
-                    FixedMainCamera.CopyFrom(Camera.main);
-                    FixedMainCamera.targetDisplay = 2;
-                    FixedPlane = Instantiate(FixedPlanePrefab);
-                    // 1
-                    FixedTransformData = new TransformData(Camera.main.transform);
-                    //FixedPlane.transform.Translate(FixedTransformData.LocalPosition + FixedTransformData.LocalEulerAngles * FixedPlaneDistance);
-                    // 2
-                    FixedPlane.transform.Translate(FixedMainCamera.ScreenToWorldPoint(new Vector3(FixedMainCamera.pixelWidth / 2.0f, FixedMainCamera.pixelHeight / 2.0f, FixedPlaneDistance)));
-                    FixedPlane.transform.forward = FixedMainCamera.transform.forward;
-                    FixedPlane.transform.Rotate(new Vector3(90.0f, 0.0f, 0.0f));
-                    LineDrawObject = Instantiate(LineDrawPrefab) as GameObject;
-                    magicLineRenderer = LineDrawObject.GetComponent<MagicLineRenderer>();
-                    magicLineRenderer.SetDistance(FixedPlaneDistance);
                 }
             }
 
@@ -306,19 +268,6 @@ public class GlobalMagicLineListener : MonoBehaviour,
                 if (!IsDrawingLine)
                 {
                     IsDrawingLine = true;
-                    FixedMainCamera.CopyFrom(Camera.main);
-                    FixedMainCamera.targetDisplay = 2;
-                    FixedPlane = Instantiate(FixedPlanePrefab);
-                    // 1
-                    FixedTransformData = new TransformData(Camera.main.transform);
-                    //FixedPlane.transform.Translate(FixedTransformData.LocalPosition + FixedTransformData.LocalEulerAngles * FixedPlaneDistance);
-                    // 2
-                    FixedPlane.transform.Translate(FixedMainCamera.ScreenToWorldPoint(new Vector3(FixedMainCamera.pixelWidth / 2.0f, FixedMainCamera.pixelHeight / 2.0f, FixedPlaneDistance)));
-                    FixedPlane.transform.forward = FixedMainCamera.transform.forward;
-                    FixedPlane.transform.Rotate(new Vector3(90.0f, 0.0f, 0.0f));
-                    LineDrawObject = Instantiate(LineDrawPrefab) as GameObject;
-                    magicLineRenderer = LineDrawObject.GetComponent<MagicLineRenderer>();
-                    magicLineRenderer.SetDistance(FixedPlaneDistance);
                 }
             }
         }
@@ -331,7 +280,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
             RaycastHit raycastHit;
             if (Physics.Raycast(eventData.Pointer.Position, eventData.Pointer.Rays[0].Direction, out raycastHit))
             {
-                magicLineRenderer.AddPoint(raycastHit.point);
+                magicLineDrawer.AddPoint(raycastHit.point);
             }
         }
     }
@@ -341,7 +290,8 @@ public class GlobalMagicLineListener : MonoBehaviour,
         if (IsDrawingLine)
         {
             IsDrawingLine = false;
-
+            var image = magicLineDrawer.EndDrawing();
+            // 이미지 저장
         }
     }
 
@@ -408,25 +358,6 @@ public class GlobalMagicLineListener : MonoBehaviour,
 
     public void SaveMagicCircle()
     {
-        //if (!IsDrawingDrStrangeCircle)
-        //{
-        //    var direction = Camera.main.transform.forward;
-        //    if (CalculateAnglePalmDirection(new List<MixedRealityPose>() { palmPose, thumbTipPose, indexTipPose, middleTipPose, ringTipPose, pinkyTipPose }, direction, 90.0f))
-        //    {
-        //        IsDrawingDrStrangeCircle = true;
-        //        StartCoroutine(StartDrStrangePortal(direction));
-        //    }
-        //}
-
-        //TwoDimentionalDrawPoints.Clear();
-        //foreach (var worldPoint in FixedPlaneDrawPoints)
-        //{
-        //    TwoDimentionalDrawPoints.Add(FixedMainCamera.WorldToScreenPoint(worldPoint));
-        //}
-        //FixedPlaneDrawPoints.Clear();
-
-        //TextureImage image = new TextureImage();
-        //image.DrawLines(TwoDimentionalDrawPoints);
 
         //var uniqueFileName = FileGenerator.GetUniqueName("shape", Application.dataPath + "/../Shapes/", ".png");
         //File.WriteAllBytes(Application.dataPath + "/../Shapes/" + uniqueFileName, image.GetRawImage());

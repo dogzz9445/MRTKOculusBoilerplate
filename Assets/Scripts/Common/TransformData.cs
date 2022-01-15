@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Common
+namespace WizardSystem.Common
 {
     [Serializable]
     public class TransformData
