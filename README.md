@@ -4,6 +4,13 @@ This repository is designed to use Oculus hand tracking using MRTK using MRTK an
 2. TBA
 3. TBA
 
+## Requirements
+> Add GRPC to Unity \
+> 교체예정 https://shadabambat1.medium.com/basic-client-server-communication-using-unity-grpc-f4a3c2cf819c
+
+> 참조 프로젝트 \ 
+> 파이썬 모델
+
 # Wizard System (Hand Tracking)
 
 # TODO:
