@@ -344,6 +344,15 @@ public class GlobalMagicLineListener : MonoBehaviour,
             // 이미지 저장
             var uniqueFileName = FileGenerator.GetUniqueName("shape", Application.dataPath + "/../Shapes/", ".png");
             File.WriteAllBytes(Application.dataPath + "/../Shapes/" + uniqueFileName, image.GetRawImage());
+
+            //ComputerControl computerControl = new ComputerControl()
+            //{
+            //    Control = ComputerControl.Types.ComputerControlType.Restart
+            //};
+            //Channel channel = new Channel(computer.ComputerIp + ":5001", ChannelCredentials.Insecure);
+            //var client = new Remote.RemoteClient(channel);
+            //var reply = await client.PostComputerControlMessageAsync(computerControl);
+            //await channel.ShutdownAsync();
         }
     }
 
