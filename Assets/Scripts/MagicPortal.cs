@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.VFX;
+using WizardSystem.Common;
 
 [ExecuteInEditMode]
 public class MagicPortal : MonoBehaviour
