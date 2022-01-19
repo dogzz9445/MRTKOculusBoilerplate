@@ -133,7 +133,7 @@ namespace WizardSystem
                 // get smoothed values
                 smoothedPoints = LineSmoother.SmoothLine(linePoints.ToArray(), lineSegmentSize);
 
-                Debug.Log("original size: " + linePoints.Count + " smooth : " + smoothedPoints.Length);
+               // Debug.Log("original size: " + linePoints.Count + " smooth : " + smoothedPoints.Length);
                 lineRenderer.positionCount = smoothedPoints.Length;
                 lineRenderer.SetPositions(smoothedPoints);
                 lineRenderer.startWidth = distanceLineWidth;

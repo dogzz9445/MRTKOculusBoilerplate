@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Google.Protobuf;
+using Grpc.Core;
 using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.Utilities;
@@ -7,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Windows;
 using WizardSystem;
 using WizardSystem.Common;
+using WizardSystem.Protobuf;
 
 [RequireComponent(typeof(MagicLineDrawer))]
 public class GlobalMagicLineListener : MonoBehaviour,
@@ -155,12 +158,12 @@ public class GlobalMagicLineListener : MonoBehaviour,
         return false;
     }
 
-    private void Start()
+    private void Awake()
     {
         IsOnFocusRightHand = false;
         IsOnFocusLeftHand = false;
         IsDrawingLine = false;
-        magicLineDrawer = new MagicLineDrawer();
+        magicLineDrawer = GetComponent<MagicLineDrawer>();
     }
 
     private void OnEnable()
@@ -296,30 +299,31 @@ public class GlobalMagicLineListener : MonoBehaviour,
             if (!IsDrawingLine)
             {
                 IsDrawingLine = true;
+                magicLineDrawer.StartDrawing();
             }
         }
         #endregion
 
-        if (!IsOnFocusOperationHand)
-        {
-            // 노말 명령
-            if (IsNormalMagicReady)
-            {
-                if (!IsDrawingLine)
-                {
-                    IsDrawingLine = true;
-                }
-            }
+        //if (!IsOnFocusOperationHand)
+        //{
+        //    // 노말 명령
+        //    if (IsNormalMagicReady)
+        //    {
+        //        if (!IsDrawingLine)
+        //        {
+        //            IsDrawingLine = true;
+        //        }
+        //    }
 
-            // 
-            if (IsSkillMagicReady)
-            {
-                if (!IsDrawingLine)
-                {
-                    IsDrawingLine = true;
-                }
-            }
-        }
+        //    // 
+        //    if (IsSkillMagicReady)
+        //    {
+        //        if (!IsDrawingLine)
+        //        {
+        //            IsDrawingLine = true;
+        //        }
+        //    }
+        //}
     }
 
     public void OnPointerDragged(MixedRealityPointerEventData eventData)
@@ -345,14 +349,29 @@ public class GlobalMagicLineListener : MonoBehaviour,
             var uniqueFileName = FileGenerator.GetUniqueName("shape", Application.dataPath + "/../Shapes/", ".png");
             File.WriteAllBytes(Application.dataPath + "/../Shapes/" + uniqueFileName, image.GetRawImage());
 
-            //ComputerControl computerControl = new ComputerControl()
-            //{
-            //    Control = ComputerControl.Types.ComputerControlType.Restart
-            //};
-            //Channel channel = new Channel(computer.ComputerIp + ":5001", ChannelCredentials.Insecure);
-            //var client = new Remote.RemoteClient(channel);
-            //var reply = await client.PostComputerControlMessageAsync(computerControl);
-            //await channel.ShutdownAsync();
+            Debug.Log(image.Texture.width);
+            Debug.Log(image.Texture.height);
+            Color32[] colors = image.Texture.GetPixels32();
+            List<byte> uploadingBytes = new List<byte>();
+            foreach (var color in colors)
+            {
+                uploadingBytes.Add((byte)(color.r * 255));
+                uploadingBytes.Add((byte)(color.g * 255));
+                uploadingBytes.Add((byte)(color.b * 255));
+            }
+
+
+            Image uploadingImage = new Image()
+            {
+                ImageData = ByteString.CopyFrom(uploadingBytes.ToArray()),
+                Width = image.Texture.width,
+                Height = image.Texture.height
+            };
+            Channel channel = new Channel("127.0.0.1:50051", ChannelCredentials.Insecure);
+            var client = new WizardService.WizardServiceClient(channel);
+            Magic reply = client.PostMagicImageRaw(uploadingImage);
+            Debug.Log(reply.Type);
+            channel.ShutdownAsync();
         }
     }
 

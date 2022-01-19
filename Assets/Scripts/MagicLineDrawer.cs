@@ -17,7 +17,8 @@ namespace WizardSystem
 
         public float FixedPlaneDistance = 5.5f;
 
-        public MagicLineDrawer()
+
+        private void Start()
         {
             FixedMainCamera = new GameObject("FixedMainCamera").AddComponent<Camera>();
             FixedMainCamera.targetDisplay = 2;
