@@ -59,13 +59,12 @@ namespace WizardSystem
             //    }
             //}
             List<Vector3> DrawPoints2D = new List<Vector3>();
-
-            DrawPoints2D.Clear();
             foreach (var worldPoint in magicLineRenderer.LinePoints)
             {
                 DrawPoints2D.Add(FixedMainCamera.WorldToScreenPoint(worldPoint));
             }
-            magicLineRenderer.LinePoints.Clear();
+            Destroy(magicLineRenderer.gameObject);
+            Destroy(FixedPlane.gameObject);
 
             TextureImage image = new TextureImage();
             image.DrawLines(DrawPoints2D);

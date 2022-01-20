@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Google.Protobuf;
 using Grpc.Core;
 using Microsoft.MixedReality.Toolkit;
@@ -26,7 +27,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
     public bool IsOnFocusLeftHand { get; private set; }
     public bool IsDrawingLine { get; private set; }
 
-    MagicLineDrawer magicLineDrawer;
+    private MagicLineDrawer magicLineDrawer;
 
     //
     // Hand poses
@@ -345,35 +346,43 @@ public class GlobalMagicLineListener : MonoBehaviour,
             IsDrawingLine = false;
             var image = magicLineDrawer.EndDrawing();
 
-            // 이미지 저장
-            var uniqueFileName = FileGenerator.GetUniqueName("shape", Application.dataPath + "/../Shapes/", ".png");
-            File.WriteAllBytes(Application.dataPath + "/../Shapes/" + uniqueFileName, image.GetRawImage());
-
-            Debug.Log(image.Texture.width);
-            Debug.Log(image.Texture.height);
-            Color32[] colors = image.Texture.GetPixels32();
-            List<byte> uploadingBytes = new List<byte>();
-            foreach (var color in colors)
-            {
-                uploadingBytes.Add((byte)(color.r * 255));
-                uploadingBytes.Add((byte)(color.g * 255));
-                uploadingBytes.Add((byte)(color.b * 255));
-            }
-
-
-            Image uploadingImage = new Image()
-            {
-                ImageData = ByteString.CopyFrom(uploadingBytes.ToArray()),
-                Width = image.Texture.width,
-                Height = image.Texture.height
-            };
-            Channel channel = new Channel("127.0.0.1:50051", ChannelCredentials.Insecure);
-            var client = new WizardService.WizardServiceClient(channel);
-            Magic reply = client.PostMagicImageRaw(uploadingImage);
-            Debug.Log(reply.Type);
-            channel.ShutdownAsync();
+            SaveImage(image);
+            SendImage(image);
         }
     }
+
+    public async void SaveImage(TextureImage image)
+    {
+        // 이미지 저장
+        var uniqueFileName = FileGenerator.GetUniqueName("shape", Application.dataPath + "/../Shapes/", ".png");
+        File.WriteAllBytes(Application.dataPath + "/../Shapes/" + uniqueFileName, image.GetRawImage());
+        await Task.Yield();
+    }
+
+    public async void SendImage(TextureImage image)
+    {
+        Color32[] colors = image.Texture.GetPixels32();
+        List<byte> uploadingBytes = new List<byte>();
+        foreach (var color in colors)
+        {
+            uploadingBytes.Add((byte)(color.r * 255));
+            uploadingBytes.Add((byte)(color.g * 255));
+            uploadingBytes.Add((byte)(color.b * 255));
+        }
+
+        Image uploadingImage = new Image()
+        {
+            ImageData = ByteString.CopyFrom(uploadingBytes.ToArray()),
+            Width = image.Texture.width,
+            Height = image.Texture.height
+        };
+        Channel channel = new Channel("127.0.0.1:50051", ChannelCredentials.Insecure);
+        var client = new WizardService.WizardServiceClient(channel);
+        Magic reply = await client.PostMagicImageRawAsync(uploadingImage);
+        Debug.Log(reply.Type);
+        await channel.ShutdownAsync();
+    }
+
 
     public void OnPointerClicked(MixedRealityPointerEventData eventData)
     {

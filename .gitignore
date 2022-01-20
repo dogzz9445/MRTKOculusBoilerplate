@@ -98,3 +98,4 @@ Nuget.config*
 Assets/MixedRealityToolkit.Providers/WindowsMixedReality/Shared/DotNetAdapter/.bin/
 Assets/MixedRealityToolkit.Providers/WindowsMixedReality/Shared/DotNetAdapter/.obj/
 Assets/Plugins/
+Shapes/
