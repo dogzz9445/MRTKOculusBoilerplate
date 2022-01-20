@@ -379,10 +379,9 @@ public class GlobalMagicLineListener : MonoBehaviour,
         Channel channel = new Channel("127.0.0.1:50051", ChannelCredentials.Insecure);
         var client = new WizardService.WizardServiceClient(channel);
         Magic reply = await client.PostMagicImageRawAsync(uploadingImage);
-        Debug.Log(reply.Type);
+        Debug.Log(MagicTypeConverter.GetMagicName(MagicTypeConverter.GetMagicType(int.Parse(reply.Type))));
         await channel.ShutdownAsync();
     }
-
 
     public void OnPointerClicked(MixedRealityPointerEventData eventData)
     {

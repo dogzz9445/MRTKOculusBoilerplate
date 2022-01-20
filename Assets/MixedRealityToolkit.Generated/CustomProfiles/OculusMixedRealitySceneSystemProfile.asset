@@ -49,7 +49,7 @@ MonoBehaviour:
   cachedLightingSettings:
   - SceneName: LightingScene
     RenderSettings:
-      Fog: 1
+      Fog: 0
       FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       FogMode: 2
       FogDensity: 0.13
@@ -59,10 +59,10 @@ MonoBehaviour:
       AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
       AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
       AmbientLight: {r: 0, g: 0, b: 0, a: 0}
-      AmbientIntensity: 1
+      AmbientIntensity: 0.71
       AmbientMode: 0
       SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-      SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+      SkyboxMaterial: {fileID: 0}
       DefaultReflectionMode: 0
       DefaultReflectionResolution: 128
       ReflectionBounces: 1
@@ -87,4 +87,4 @@ MonoBehaviour:
   editorEnforceSceneOrder: 1
   editorManageLoadedScenes: 1
   editorEnforceLightingSceneTypes: 1
-  editorLightingCacheOutOfDate: 1
+  editorLightingCacheOutOfDate: 0

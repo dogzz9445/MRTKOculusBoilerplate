@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using WizardSystem.Common;
 
@@ -63,12 +64,19 @@ namespace WizardSystem
             {
                 DrawPoints2D.Add(FixedMainCamera.WorldToScreenPoint(worldPoint));
             }
-            Destroy(magicLineRenderer.gameObject);
-            Destroy(FixedPlane.gameObject);
+
+            StartCoroutine(DestroySlowly());
 
             TextureImage image = new TextureImage();
             image.DrawLines(DrawPoints2D);
             return image;
+        }
+
+        private IEnumerator DestroySlowly()
+        {
+            yield return new WaitForSeconds(5);
+            Destroy(magicLineRenderer.gameObject);
+            Destroy(FixedPlane.gameObject);
         }
 
 

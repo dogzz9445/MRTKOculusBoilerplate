@@ -4,6 +4,9 @@ This repository is designed to use Oculus hand tracking using MRTK using MRTK an
 2. TBA
 3. TBA
 
+now(2022-01-10)
+![image1](./Images/hou.png)
+
 ## Requirements
 > Add GRPC to Unity \
 > 교체예정 https://shadabambat1.medium.com/basic-client-server-communication-using-unity-grpc-f4a3c2cf819c
