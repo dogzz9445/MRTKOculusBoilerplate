@@ -13,6 +13,11 @@ namespace WizardSystem.Common
         {
             string validatedName = name + extension;
             int tries = 1;
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
             while (File.Exists(folderPath + validatedName))
             {
                 validatedName = string.Format("{0}_{1:00000}{2}", name, tries++, extension);
