@@ -346,7 +346,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &170565755
 GameObject:
@@ -392,158 +392,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &862155842
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 862155845}
-  - component: {fileID: 862155844}
-  - component: {fileID: 862155843}
-  - component: {fileID: 862155846}
-  m_Layer: 0
-  m_Name: DrStrangePortal
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!73398921 &862155843
-VFXRenderer:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 862155842}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_MotionVectors: 0
-  m_LightProbeUsage: 0
-  m_ReflectionProbeUsage: 0
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 0}
-  - {fileID: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
---- !u!2083052967 &862155844
-VisualEffect:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 862155842}
-  m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 478f767b6dea7ed4f828ee7b32f83079, type: 3}
-  m_InitialEventName: OnPlay
-  m_InitialEventNameOverriden: 0
-  m_StartSeed: 0
-  m_ResetSeedOnPlay: 0
-  m_ResourceVersion: 1
-  m_PropertySheet:
-    m_Float:
-      m_Array:
-      - m_Value: 4
-        m_Name: Radius
-        m_Overridden: 1
-    m_Vector2f:
-      m_Array: []
-    m_Vector3f:
-      m_Array:
-      - m_Value: {x: 0, y: 0, z: 0}
-        m_Name: Center
-        m_Overridden: 0
-      - m_Value: {x: 0, y: 2, z: 0}
-        m_Name: Center_position
-        m_Overridden: 1
-      - m_Value: {x: 0, y: 0, z: 0}
-        m_Name: CenterPosition
-        m_Overridden: 1
-      - m_Value: {x: 0, y: 0, z: 1}
-        m_Name: CenterForward
-        m_Overridden: 1
-    m_Vector4f:
-      m_Array: []
-    m_Uint:
-      m_Array: []
-    m_Int:
-      m_Array: []
-    m_Matrix4x4f:
-      m_Array: []
-    m_AnimationCurve:
-      m_Array: []
-    m_Gradient:
-      m_Array: []
-    m_NamedObject:
-      m_Array: []
-    m_Bool:
-      m_Array: []
---- !u!4 &862155845
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 862155842}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &862155846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 862155842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 437c6c903b4e3a04f800469c42651688, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_visualEffect: {fileID: 862155844}
-  m_transformData:
-    LocalPosition: {x: 0, y: 0, z: 0}
-    LocalEulerAngles: {x: -0, y: 0, z: 0}
-    LocalScale: {x: 1, y: 1, z: 1}
-  m_radius: 4
-  m_maxRadius: 4
-  <OtherPortal>k__BackingField: {fileID: 0}
-  outllineRenderer: {fileID: 0}
-  <PortalColour>k__BackingField: {r: 0, g: 0, b: 0, a: 0}
-  placementMask:
-    serializedVersion: 2
-    m_Bits: 0
-  testTransform: {fileID: 0}
 --- !u!1 &863151910
 GameObject:
   m_ObjectHideFlags: 0
@@ -555,6 +403,7 @@ GameObject:
   - component: {fileID: 863151912}
   - component: {fileID: 863151913}
   - component: {fileID: 863151911}
+  - component: {fileID: 863151914}
   m_Layer: 0
   m_Name: GlobalMagicLineListener
   m_TagString: Untagged
@@ -587,7 +436,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &863151913
 MonoBehaviour:
@@ -603,9 +452,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LineDrawPrefab: {fileID: 6614690093748125186, guid: e2df82fecb42155439616944a62905c6, type: 3}
   FixedPlanePrefab: {fileID: 5683093099553919286, guid: 3ce90aa8fd56ea84eb65078bbcae1e76, type: 3}
-  FixedPlane: {fileID: 0}
-  magicLineRenderer: {fileID: 0}
   FixedPlaneDistance: 5.5
+--- !u!114 &863151914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 863151910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 054adb0fd43a1974aa1454dfcbbea1d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _portalPrefab: {fileID: 0}
+  _fireBallPrefab: {fileID: 0}
+  _lightningPrefab: {fileID: 0}
+  _waterBallPrefab: {fileID: 0}
 --- !u!1 &1754699626
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,5 +498,5 @@ Transform:
   m_Children:
   - {fileID: 29071608}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

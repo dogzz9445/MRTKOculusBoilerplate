@@ -353,14 +353,15 @@ public class GlobalMagicLineListener : MonoBehaviour,
 
     public async void SaveImage(TextureImage image)
     {
+        await Task.Yield();
         // 이미지 저장
         var uniqueFileName = FileGenerator.GetUniqueName("shape", Application.dataPath + "/../Shapes/", ".png");
         File.WriteAllBytes(Application.dataPath + "/../Shapes/" + uniqueFileName, image.GetRawImage());
-        await Task.Yield();
     }
 
     public async void SendImage(TextureImage image)
     {
+        await Task.Yield();
         Color32[] colors = image.Texture.GetPixels32();
         List<byte> uploadingBytes = new List<byte>();
         foreach (var color in colors)
