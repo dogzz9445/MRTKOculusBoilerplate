@@ -10,9 +10,10 @@ namespace WizardSystem
         public GameObject LineDrawPrefab;
         public GameObject FixedPlanePrefab;
 
-        public GameObject FixedPlane = null;
-        public MagicLineRenderer magicLineRenderer;
+        private GameObject FixedPlane = null;
+        private MagicLineRenderer magicLineRenderer;
 
+        [SerializeField]
         public float FixedPlaneDistance = 5.5f;
 
         private GameObject LineDrawObject;
