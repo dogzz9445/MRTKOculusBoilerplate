@@ -57,13 +57,47 @@ namespace WizardSystem
             return image;
         }
 
-        private IEnumerator DestroySlowly(GameObject lineRenderer, GameObject plane)
+        private IEnumerator DestroySlowly(GameObject lineRendererObject, GameObject plane)
         {
-            yield return new WaitForSeconds(5);
-            Destroy(lineRenderer);
             Destroy(plane);
+            yield return new WaitForSeconds(5);
+            var lineRenderer = lineRendererObject.GetComponent<LineRenderer>();
+
+            float fadeOutSpeed = 0.0f;
+            while (fadeOutSpeed < 2.0f)
+            {
+                fadeOutSpeed += Time.deltaTime;
+                Color color = Color.Lerp(new Color(1.0f, 1.0f, 1.0f, 1.0f), new Color(0f, 0f, 0f, 0f), fadeOutSpeed);
+                lineRenderer.materials[0].SetColor("_TintColor", color);
+            }
+            Destroy(lineRendererObject);
         }
 
+        // TODO: 
+        //IEnumerator FadeLineRenderer()
+        //{
+        //    Gradient lineRendererGradient = new Gradient();
+        //    float fadeSpeed = 3f;
+        //    float timeElapsed = 0f;
+        //    float alpha = 1f;
+
+        //    while (timeElapsed < fadeSpeed)
+        //    {
+        //        alpha = Mathf.Lerp(1f, 0f, timeElapsed / fadeSpeed);
+
+        //        lineRendererGradient.SetKeys
+        //        (
+        //            lineRenderer.colorGradient.colorKeys,
+        //            new GradientAlphaKey[] { new GradientAlphaKey(alpha, 1f) }
+        //        );
+        //        lineRenderer.colorGradient = lineRendererGradient;
+
+        //        timeElapsed += Time.deltaTime;
+        //        yield return null;
+        //    }
+
+        //    Destroy(gameObject);
+        //}
 
         //public bool IsDrawingDrStrangeCircle { get; private set; }
         //private IEnumerator StartDrStrangePortal(Vector3 direction)

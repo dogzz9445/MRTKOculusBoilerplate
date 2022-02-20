@@ -20,7 +20,9 @@ public class GlobalMagicLineListener : MonoBehaviour,
     IMixedRealityFocusHandler,
     IMixedRealityPointerHandler
 {
-
+    [SerializeField]
+    public bool IsDebug = true;
+    [SerializeField]
     public bool IsWizard = true;
 
     public bool IsOnFocusRightHand { get; private set; }
@@ -204,7 +206,10 @@ public class GlobalMagicLineListener : MonoBehaviour,
         // Only react to articulated hand input sources
         if (hand != null)
         {
-            Debug.Log("Source detected: " + hand.ControllerHandedness);
+            if (IsDebug)
+            {
+                Debug.Log("Source detected: " + hand.ControllerHandedness);
+            }
         }
     }
 
@@ -215,7 +220,10 @@ public class GlobalMagicLineListener : MonoBehaviour,
         // Only react to articulated hand input sources
         if (hand != null)
         {
-            Debug.Log("Source lost: " + hand.ControllerHandedness);
+            if (IsDebug)
+            {
+                Debug.Log("Source lost: " + hand.ControllerHandedness);
+            }
         }
     }
 
@@ -258,12 +266,18 @@ public class GlobalMagicLineListener : MonoBehaviour,
 
     public void OnActionStarted(BaseInputEventData eventData)
     {
-        Debug.Log(eventData.InputSource.SourceName + " " +eventData.MixedRealityInputAction.Description);
+        if (IsDebug)
+        {
+            Debug.Log(eventData.InputSource.SourceName + " " + eventData.MixedRealityInputAction.Description);
+        }
     }
 
     public void OnActionEnded(BaseInputEventData eventData)
     {
-        Debug.Log(eventData.InputSource.SourceName + " " + eventData.MixedRealityInputAction.Description);
+        if (IsDebug)
+        {
+            Debug.Log(eventData.InputSource.SourceName + " " + eventData.MixedRealityInputAction.Description);
+        }
     }
 
     public void OnFocusEnter(FocusEventData eventData)

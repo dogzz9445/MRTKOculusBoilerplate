@@ -46,7 +46,6 @@ namespace WizardSystem
         private LineRenderer lineRenderer = null;
 
         private float oldLineWidth = 0.0f;
-        private float oldEndWidth = 0.0f;
         private float oldLineRendererStartWidth = 0.0f;
         private float oldLineRendererEndWidth = 0.0f;
 
