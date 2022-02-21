@@ -282,26 +282,28 @@ public class GlobalMagicLineListener : MonoBehaviour,
 
     public void OnFocusEnter(FocusEventData eventData)
     {
-        if (eventData.Pointer.PointerName.StartsWith("Right"))
-        {
-            IsOnFocusRightHand = true;
-        }
-        else if (eventData.Pointer.PointerName.StartsWith("Left"))
-        {
-            IsOnFocusLeftHand = true;
-        }
+        //Debug.Log("------Focus In");
+        //if (eventData.Pointer.PointerName.StartsWith("Right"))
+        //{
+        //    IsOnFocusRightHand = true;
+        //}
+        //else if (eventData.Pointer.PointerName.StartsWith("Left"))
+        //{
+        //    IsOnFocusLeftHand = true;
+        //}
     }
 
     public void OnFocusExit(FocusEventData eventData)
     {
-        if (eventData.Pointer.PointerName.StartsWith("Right"))
-        {
-            IsOnFocusRightHand = false;
-        }
-        else if (eventData.Pointer.PointerName.StartsWith("Left"))
-        {
-            IsOnFocusLeftHand = false;
-        }
+        //Debug.Log("------Focus Out");
+        //if (eventData.Pointer.PointerName.StartsWith("Right"))
+        //{
+        //    IsOnFocusRightHand = false;
+        //}
+        //else if (eventData.Pointer.PointerName.StartsWith("Left"))
+        //{
+        //    IsOnFocusLeftHand = false;
+        //}
     }
 
     public void OnPointerDown(MixedRealityPointerEventData eventData)
@@ -311,6 +313,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
         #region test
         if (!IsOnFocusRightHand)
         {
+            Debug.Log("PointerDown: " + IsDrawingLine);
             if (!IsDrawingLine)
             {
                 IsDrawingLine = true;
@@ -385,7 +388,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
             uploadingBytes.Add((byte)(color.b * 255));
         }
 
-        Image uploadingImage = new Image()
+        MagicImage uploadingImage = new MagicImage()
         {
             ImageData = ByteString.CopyFrom(uploadingBytes.ToArray()),
             Width = image.Texture.width,
@@ -394,7 +397,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
         Channel channel = new Channel("127.0.0.1:50051", ChannelCredentials.Insecure);
         var client = new WizardService.WizardServiceClient(channel);
         Magic reply = await client.PostMagicImageRawAsync(uploadingImage);
-        Debug.Log(MagicTypeConverter.GetMagicName(MagicTypeConverter.GetMagicType(int.Parse(reply.Type))));
+        Debug.Log(reply.Type);
         await channel.ShutdownAsync();
     }
 

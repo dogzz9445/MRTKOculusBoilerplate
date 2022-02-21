@@ -59,10 +59,10 @@ MonoBehaviour:
       AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
       AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
       AmbientLight: {r: 0, g: 0, b: 0, a: 0}
-      AmbientIntensity: 0.71
+      AmbientIntensity: 0.95
       AmbientMode: 0
-      SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-      SkyboxMaterial: {fileID: 0}
+      SubtractiveShadowColor: {r: 0.7833584, g: 0.48602706, b: 0.8113208, a: 1}
+      SkyboxMaterial: {fileID: 2100000, guid: 67200f86e9fbe5047999e02c5b954750, type: 2}
       DefaultReflectionMode: 0
       DefaultReflectionResolution: 128
       ReflectionBounces: 1
@@ -77,14 +77,14 @@ MonoBehaviour:
       EnableBakedLightmaps: 1
       EnabledRealtimeLightmaps: 0
     SunlightSettings:
-      UseSunlight: 0
-      Color: {r: 0, g: 0, b: 0, a: 0}
-      Intensity: 0
-      XRotation: 0
-      YRotation: 0
+      UseSunlight: 1
+      Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+      Intensity: 1
+      XRotation: 50
+      YRotation: 330
       ZRotation: 0
   editorManageBuildSettings: 1
   editorEnforceSceneOrder: 1
   editorManageLoadedScenes: 1
   editorEnforceLightingSceneTypes: 1
-  editorLightingCacheOutOfDate: 0
+  editorLightingCacheOutOfDate: 1
