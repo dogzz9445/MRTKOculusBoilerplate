@@ -29,6 +29,8 @@ public class GlobalMagicLineListener : MonoBehaviour,
     public bool IsOnFocusLeftHand { get; private set; }
     public bool IsDrawingLine { get; private set; }
 
+    public GameObject FloatingTextCanvasPrefab;
+
     private MagicLineDrawer magicLineDrawer;
 
     //
@@ -397,8 +399,21 @@ public class GlobalMagicLineListener : MonoBehaviour,
         Channel channel = new Channel("127.0.0.1:50051", ChannelCredentials.Insecure);
         var client = new WizardService.WizardServiceClient(channel);
         Magic reply = await client.PostMagicImageRawAsync(uploadingImage);
+
+        StartCoroutine(ShowLog(reply.Type));
         Debug.Log(reply.Type);
         await channel.ShutdownAsync();
+    }
+
+    public IEnumerator ShowLog(string log)
+    {
+        GameObject FloatingTextCanvas = Instantiate(FloatingTextCanvasPrefab);
+        FloatingTextCanvas.GetComponent<FloatingText>().Text = log;
+        FloatingTextCanvas.transform.position = Camera.main.transform.position + (Camera.main.transform.forward * 3);
+        FloatingTextCanvas.transform.rotation = Quaternion.Euler(-Camera.main.transform.forward);
+
+        yield return new WaitForSeconds(5.0f);
+        Destroy(FloatingTextCanvas);
     }
 
     public void OnPointerClicked(MixedRealityPointerEventData eventData)
