@@ -385,7 +385,7 @@ public class GlobalMagicLineListener : MonoBehaviour,
             uploadingBytes.Add((byte)(color.b * 255));
         }
 
-        Image uploadingImage = new Image()
+        MagicImage uploadingImage = new MagicImage()
         {
             ImageData = ByteString.CopyFrom(uploadingBytes.ToArray()),
             Width = image.Texture.width,
