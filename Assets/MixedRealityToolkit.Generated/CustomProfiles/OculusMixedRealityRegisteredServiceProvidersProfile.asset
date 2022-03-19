@@ -21,3 +21,9 @@ MonoBehaviour:
     priority: 10
     runtimePlatform: -1
     configurationProfile: {fileID: 11400000, guid: 8077cae4da664ba41a56e9cce68c5bb7, type: 2}
+  - componentType:
+      reference: 
+    componentName: New Configuration 1
+    priority: 10
+    runtimePlatform: -1
+    configurationProfile: {fileID: 0}
