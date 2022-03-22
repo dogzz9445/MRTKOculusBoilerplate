@@ -4,9 +4,7 @@
       "version": "file:HandPosing-MRTK",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {
-        "com.microsoft.mixedreality.toolkit.foundation": "2.7.2"
-      }
+      "dependencies": {}
     },
     "com.microsoft.mixedreality.openxr": {
       "version": "file:MixedReality/com.microsoft.mixedreality.openxr-1.0.3.tgz",
